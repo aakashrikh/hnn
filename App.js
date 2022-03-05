@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import type {Node} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -124,7 +123,7 @@ class StackNavi_logout extends Component
     return (
         <Stack.Navigator>
           <Stack.Screen options={{headerShown: false}}name="SignIn" component={SignIn} />
-          <Stack.Screen options={{headerShown: true}}name="Otp" component={Otp} />
+          <Stack.Screen options={{headerShown: true}}name="Otp" component={Otp} option={{headerShown:false}}/>
           <Stack.Screen options={{headerShown: false}}name="FirstUserProfile" component={FirstUserProfile} />
         </Stack.Navigator>
       )
