@@ -3,25 +3,63 @@ import { Component } from 'react';
 import { Button } from 'react-native-elements';
 import { View, Text, StyleSheet, Image, ImageBackground, TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import {AuthContext} from '../AuthContextProvider';
 class Profile extends Component {
-
+    static contextType = AuthContext;
     constructor(props) {
         super(props)
         this.state = {
             activeIndex: 0,
-            name:null
+            name:null,
+            points:0,
+            level:0
         }
     }
 
     componentDidMount()
     {
-
+        this.get_profile_data();
     }
 
     segmentClicked = (index) => {
         this.setState({ activeIndex: index })
     }
+
+    get_profile_data = () =>{
+
+        fetch(global.api_key+"get_user_profile", {
+            method: 'POST',
+            headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization':global.token 
+            }
+            }).then((response) => response.json())
+            .then((json) => {
+                console.warn(json)
+               if(!json.status){
+                  // Toast.show(json.msg)
+               }
+                else
+                {
+                    this.setState({data:json.data})
+                    this.setState({name:json.data.name})
+                    this.setState({points:json.data.points})
+                    this.setState({level:json.data.level})
+                    // if(json.data.dob==null){
+                    // this.setState({chosenDate:this.state.chosenDate})
+                    // }
+                    // else{
+                    //     this.setState({chosenDate:json.data.dob})
+                    // }
+                }
+            })
+            .catch((error) => console.error(error))
+            .finally(() => {
+              this.setState({ isLoading: false });
+            });
+    }
+
 
     renderSection = () => {
         if (this.state.activeIndex == 0) {
@@ -60,12 +98,12 @@ class Profile extends Component {
                     <View style={{ flex: 3 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                             <View style={{ alignItems: 'center', }}>
-                                <Text style={{ fontSize: 20, marginTop: 30, color: 'white' }}>0</Text>
+                                <Text style={{ fontSize: 20, marginTop: 30, color: 'white' }}>{this.state.points}</Text>
                                 <Text style={{ fontSize: 20, color: 'gray', }}>Points</Text>
                             </View>
 
                             <View style={{ alignItems: 'center', }}>
-                                <Text style={{ fontSize: 20, marginTop: 30, color: 'white' }}>0</Text>
+                                <Text style={{ fontSize: 20, marginTop: 30, color: 'white' }}>{this.state.level}</Text>
                                 <Text style={{ fontSize: 20, color: 'gray' }}>Level</Text>
                             </View>
 
@@ -76,11 +114,11 @@ class Profile extends Component {
                 </View>
                 <View>
                     <View style={{ marginTop: 25, marginLeft: 20,marginBottom:20 }} >
-                        <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 15 }}>Rajat Walia</Text>
+                        <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 15 }}>{this.state.name}</Text>
                         {/* <Text style={{ color: 'white', fontSize: 15 }}>Love|Light|Truth</Text> */}
                     </View>
 
-                    <View>
+                    <View style={{marginTop:2,padding:20}}>
 
                     <Button 
                     onPress={()=>{this.props.navigation.navigate('EditProfile')}}
@@ -94,10 +132,23 @@ class Profile extends Component {
                     title=" Edit Profile" buttonStyle={{backgroundColor:'#ff5b23'}}
                     />
 
+
+                
                     </View>
 
-
-
+                        <View style={{marginTop:5,padding:20}}>
+                <Button 
+                    onPress={()=>{this.context.logout()}}
+                    icon={ <Icon
+                        name="logout"
+                        size={15}
+                        color="white"
+                        />
+                        }
+                    iconLeft
+                    title="Logout" buttonStyle={{backgroundColor:'#ff5b23'}}
+                    />
+ </View>
                 </View>
               
 

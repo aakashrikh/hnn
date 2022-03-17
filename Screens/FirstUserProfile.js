@@ -16,16 +16,15 @@ import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Input} from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { AuthContext } from '../AuthContextProvider.js';
 import Toast from 'react-native-simple-toast';
 
 class FirstUserProfile extends Component
 {
-
+    static contextType=AuthContext;
     constructor(props)
     {
         super(props);
-
        this.state = {
         name: '',
         email: '',
@@ -36,71 +35,101 @@ class FirstUserProfile extends Component
       }
     }
 
-    update_profile = () =>
-    {
+    update_profile = () =>{
+        let validation=/^[a-zA-Z" "]+$/;
+        let isValid = validation.test(this.state.name)
+          {
+              this.setState({msg:""});
+              if(this.state.name == "" && this.state.email == "")
+              {
+                  Toast.show("All fields are required !");
+              }
+              else if(!isValid){
+                  Toast.show("Enter a valid name !");
+              }
+              else{
+                  this.setState({isLoading:true});  
+                  var name=this.state.name;
+                  var email=this.state.email;
+  
+                  fetch(global.api_key+"update_profile_name", { 
+                       method: 'POST',
+                         headers: {    
+                             Accept: 'application/json',  
+                               'Content-Type': 'application/json',
+                               'Authorization': global.token  
+                              }, 
+                               body: JSON.stringify({   
+                                  email: email, 
+                                  name: name,
+                                    })}).then((response) => response.json())
+                                       .then((json) => {
+                                           console.warn(json)
+                                           
+                                            Toast.show("Profile successfully created!")
+                                            global.use_type='done';
+                                            AsyncStorage.getItem('@auth_login', (err, result) => {
+                                                if (JSON.parse(result) != null) {
+                                                  const data={"token":JSON.parse(result).token,"user_id":JSON.parse(result).user_id,"use_type":'done'};
+                                                  AsyncStorage.setItem('@auth_login',JSON.stringify(data));
+                                                  this.context.login('done');
+                                                } 
+                                            });
+                                
+                                           
+                                          return json;    
+                                      }).catch((error) => {  
+                                              console.error(error);   
+                                           }).finally(() => {
+                                              this.setState({isLoading:false})
+                                           });
+              }
+          }
+      }
+
+    // update_profile = () =>
+    // {
         
-        try {
-            AsyncStorage.getItem('token').then((token) =>
-           {
-               if(token != null)
-               {
-                global.api_token = token
-               }
-           })
-         } catch(e) {
-           // error reading value
-         }
-
-         try {
-            AsyncStorage.getItem('user').then((user_id) =>
-           {
-               if(user_id != null)
-               {
-                global.user_id =user_id;
-               }
-           })
-         } catch(e) {
-           // error reading value
-         }
-
-        if(this.state.name != "")
-        {
-            this.setState({ isLoading: true });
-            fetch(global.api_key+'update_profile_name', {
-                method: 'POST',
-                headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: global.api_token
-                },
-                body: JSON.stringify({
-                    name:this.state.name,
-                    email:this.state.email,
-                    user_token:global.user_id
-                         })
-                }).then((response) => response.json())
-                .then((json) => {
-                  if(json.msg=='ok')
-                  {
-                    try {
-                        AsyncStorage.setItem('user_login',"yes" );
-                      } catch (error) {
-                       alert("nn")
-                      }
-                  }
-                  else{
-                    console.warn(json);
-                  }
-                })
-                .catch((error) => console.error(error))
-                .finally(() => {
-                  this.setState({ isLoading: false });
-                });
-        }
-        else{
-            Toast.show('All fields are required!');
-        }
-    }
+    //      let validation=/^[a-zA-Z" "]+$/;
+    //      let isValid = validation.test(this.state.name) 
+    //     if(this.state.name != "")
+    //     {
+    //         this.setState({ isLoading: true });
+    //         fetch(global.api_key+'update_profile_name', {
+    //             method: 'POST',
+    //             headers: {
+    //             Accept: 'application/json',
+    //             'Content-Type': 'application/json',
+    //             Authorization: global.api_token
+    //             },
+    //             body: JSON.stringify({
+    //                 name:this.state.name,
+    //                 email:this.state.email,
+    //                 user_token:global.user_id
+    //                      })
+    //             }).then((response) => response.json())
+    //             .then((json) => {
+    //               if(json.msg=='ok')
+    //               {
+    //                 try {
+    //                     AsyncStorage.setItem('user_login',"yes" );
+    //                   } catch (error) {
+    //                    alert("nn")
+    //                   }
+    //               }
+    //               else{
+    //                 console.warn(json);
+    //               }
+    //             })
+    //             .catch((error) => console.error(error))
+    //             .finally(() => {
+    //               this.setState({ isLoading: false });
+    //             });
+    //     }
+    //     else{
+    //         Toast.show('All fields are required!');
+    //     }
+    // }
     render()
     {
         return(
@@ -124,7 +153,7 @@ class FirstUserProfile extends Component
                   />
                   <TextInput 
                   onChangeText={(e) => {this.setState({name:e})}}
-                      placeholder="Your Full name"
+                      placeholder="Enter Your Full name"
                       placeholderTextColor="#666666"
                       style={[styles.textInput, {
                           color: '#eeeeee'
@@ -143,7 +172,7 @@ class FirstUserProfile extends Component
                   />
                   <TextInput 
                   onChangeText={(e) => {this.setState({email:e})}}
-                      placeholder="Your Email"
+                      placeholder="Enter Your Email"
                       placeholderTextColor="#666666"
                       style={[styles.textInput, {
                           color: '#eeeeee'

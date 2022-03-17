@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import type {Node} from 'react';
 import {
   View, 
     Text, 
@@ -9,58 +8,68 @@ import {
     StatusBar,
     Image,ActivityIndicator
 } from 'react-native';
-
 import * as Animatable from 'react-native-animatable';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
-
 import { Input } from 'react-native-elements';
-
 import Toast from 'react-native-simple-toast';
+
 class SignIn extends Component
 {
     constructor(props)
     {
         super(props);
-
-        this.state={contact_no:null,isLoading: false}
+        this.state={
+            contact_no:"",
+            isLoading: false
+        }
     }
 
     mobile_verify = () =>
     {
-        if(this.state.contact_no != '')
+        var contact_no=this.state.contact_no;
+        var phoneNumber = this.state.contact_no;
+        let rjx= /^[0]?[6789]\d{9}$/;
+        let isValid = rjx.test(phoneNumber)
+        if(!isValid)
         {
+            Toast.show('Enter valid mobile number!');
+              
+        }
+        else{
             this.setState({isLoading:true});
-            var contact_no=this.state.contact_no;
-            fetch(global.api_key+'mobile-verification', {
+            fetch(global.api_key+"mobile-verification", {
                 method: 'POST',
                 headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    contact:contact_no
-                         })
+                    contact:contact_no,
+                })
                 }).then((response) => response.json())
                 .then((json) => {
-                    console.log(json);
-                  if(json.msg=='ok')
-                  {
-                    this.props.navigation.navigate('Otp',{contact_no:contact_no});
-                  }
-                  else
-                  {
-                    Toast.show(json.msg);
-                  }
-                  this.setState({isLoading:false});
+                    console.warn(json)
+                    if(json.msg=='ok')
+                    {
+                        Toast.show('OTP sent successfully!');
+                        this.props.navigation.navigate('Otp',{
+                            contact_no:this.state.contact_no
+                        });
+                    }
+                    else
+                    {
+                       Toast.show(json.error);
+                    }
                 })
                 .catch((error) => console.error(error))
                 .finally(() => {
                   this.setState({ isLoading: false });
                 });
-        }
+            }
     }
 
+ 
     render()
     {
         return(
@@ -70,9 +79,8 @@ class SignIn extends Component
             <Animatable.Image 
                 animation="bounceIn"
                 duraton="1500"
-            source={{uri: 'https://hnn24x7.com/wp-content/uploads/2020/10/HNN-logo-300x146.png'}}
+            source={require('../img/logosmall.png')}
             style={styles.logo}
-            resizeMode="stretch"
             />
         </View>
         <Animatable.View 
@@ -85,7 +93,13 @@ class SignIn extends Component
                 color: '#eeeeee'
             }]}>Stay connected with everyone!</Text>
             <View style={styles.button}>
-            <Input placeholder='Contact Number' onChangeText={(e) => {this.setState({contact_no:e})}}  placeholderTextColor="#eee"  leftIcon={
+            <Input
+            placeholder='Enter your mobile number'
+            onChangeText={(e) => {this.setState({contact_no:e})}}  
+            placeholderTextColor="#eee"  
+            keyboardType='number-pad'
+            maxLength={10}
+            leftIcon={
             <MaterialIcons
               name='phone'
               size={24}
@@ -143,8 +157,8 @@ const styles = StyleSheet.create({
       paddingHorizontal: 30
   },
   logo: {
-      width: height_logo,
-      height:110
+      width:130,
+      height:100
   },
   title: {
       color: '#05375a',

@@ -1,0 +1,566 @@
+import React, { Component } from 'react';
+import {
+    View,
+    StyleSheet,ActivityIndicator,
+    Image,Text,Dimensions, ScrollView, TouchableOpacity
+} from 'react-native';
+import {Header,Icon} from "react-native-elements";
+import Share from 'react-native-share';
+import RBSheet from "react-native-raw-bottom-sheet";
+import Toast from "react-native-simple-toast";
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+
+//Global Style Import
+const styles = require('../Components/Style.js');
+
+//this is the component for Post 
+class Post extends Component{
+
+    constructor(props) {
+      super(props);
+      // Don't call this.setState() here!
+      this.state = {
+        data:[],
+        object:{},
+        save:{},  
+        isLoading: true,
+        follow:{},
+        token:'',
+        page_id:0,
+        feed_id:'',
+        type:"",
+        vendor_id:0,
+        report:'',
+        actionType:'all',
+        feed_content:[]
+      };
+    }
+  
+    componentDidMount(){
+     
+     this.fetch_feeds();
+     this.focusListener=this.props.navigation.addListener('focus',() =>
+     {
+      this.fetch_feeds();
+     });
+
+    }
+
+    //function for fetching feeds
+    fetch_feeds()
+    {
+      this.setState({isLoading:true});
+
+        var page_id=this.state.page_id;
+        fetch(global.user_api+"get_user_feeds", {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization':global.token 
+          },
+          body: JSON.stringify({
+              page_id:page_id,
+              vendor_id:this.state.vendor_id,
+              action_type:this.state.actionType
+              // token:token,
+          })})
+          .then((response) => response.json())
+          .then((json) => {
+            // console.warn(json)
+            console.log(json.data);
+              this.setState({data:json.data});
+              this.setState({feed_content:json.data[0].feed_content})
+              // this.setState({feed_id:json.data[0].id})
+              // console.warn(this.state.feed_id)
+            return json;    
+          })
+          .catch((error) => {  
+                console.error(error);   
+              }).finally(() => {
+                this.setState({isLoading:false})
+              })
+    }
+    
+    //function for share
+    myShare = async (title,content,url)=>{
+      const shareOptions={
+          title:title,
+          message:content,
+          url:url,
+      }
+      try{
+          const ShareResponse = await Share.open(shareOptions);
+  
+      }catch(error){
+          console.log("Error=>",error)
+      }
+  }
+  
+    //function for feed like and unlike
+    like = (id) =>
+      {
+        // console.log(feed_id);
+        const object = this.state.object;
+        if(this.state.object[id] == true )
+        {
+          object[id] = false;
+          var type="no"
+        }
+        else
+          {
+            object[id] = true;
+            var type="yes"
+          }
+        this.setState({ object });
+
+        fetch(global.user_api+'user_feed_like',{
+          method:"POST",
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization':global.token 
+          },
+          body:JSON.stringify({
+            feed_id:id,
+            type:type
+          })
+        })
+        .then((response)=>response.json())
+        .then((json)=>{
+          // console.log(json)
+          
+          if(!json.status){
+            Toast.show(json.msg)
+          }
+          else
+          {
+                Toast.show(json.msg)
+                
+            }
+
+        })
+      }
+
+
+     
+  
+      //function to follow and unfollow vendor
+      follow=(id)=>
+      {
+        // const id=this.state.vendor_id
+        // console.warn(vendor_id)
+        const follow = this.state.follow;
+        if(this.state.follow[id] == true)
+        {
+            follow[id] = false;
+            var type="no"
+        }
+        else
+        {
+            follow[id] = true;
+            var type="yes"
+        }
+        this.setState({ follow });
+        fetch(global.user_api+'follow_vendor_user',{
+          method:"POST",
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization':global.token 
+          },
+          body:JSON.stringify({
+            vendor_id:id,
+            type:type
+          })
+        })
+        .then((response)=>response.json())
+          .then((json)=>{
+            // console.log(json)
+            const follow = this.state.follow;
+            if(!json.status){
+              
+              Toast.show(json.msg)
+            }
+            else
+            {
+             if(json.msg == "Saved"){
+               Toast.show("Followed Successfully")
+             }
+             else{
+              Toast.show("Unfollowed Successfully")
+             }
+                  }
+  
+          })
+        }
+
+        //function to save a post
+        save = (id) =>
+      {
+        // console.warn(feed_id);
+        const save = this.state.save;
+        if(this.state.save[id] == true )
+        {
+          save[id] = false;
+          var type="unsave"
+        }
+        else
+          {
+            save[id] = true;
+            var type="save"
+          }
+        this.setState({ save });
+
+        fetch(global.user_api+'user_feed_save',{
+          method:"POST",
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization':global.token 
+          },
+          body:JSON.stringify({
+            feed_id:id,
+            type:type
+          })
+        })
+        .then((response)=>response.json())
+        .then((json)=>{
+          // console.log(json)
+          
+          if(!json.status){
+            Toast.show(json.msg)
+          }
+          else
+          {
+                Toast.show(json.msg)
+                
+            }
+
+        })
+      }
+
+        //function to report a post
+        reportFeed(id){
+          var report="bekaar post"
+          fetch(global.user_api+'feed_report_user',{
+            method:"POST",
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              'Authorization':global.token 
+            },
+            body:JSON.stringify({
+              feed_id:id,
+              report:report
+            })
+          })
+          .then((response)=>response.json())
+          .then((json)=>{
+            // console.log(json)
+            if(!json.status){
+              Toast.show(json.msg)
+            }
+            else
+            {
+              Toast.show(json.msg)
+            }   
+  
+          })
+          this.RBSheet.close();
+
+        }
+
+
+        deleteFeed =()=>{
+
+        }
+
+        onClick(id){
+          alert(id)
+        }
+        
+    render(){
+  
+      const { data, object,follow,save,feed_content} = this.state;
+      if(this.state.isLoading)
+      {
+        return(
+          <View style={{alignItems:"center",flex:1,backgroundColor:"white", paddingTop:250}}>
+            <ActivityIndicator size="large" color="#326bf3" />
+            <Text style={styles.p}>Please wait...</Text>
+          </View>
+        )
+      }
+     else{
+      let feeds= data.map((feeds,id)=>{
+          return feeds.feed_content.map(feed =>{
+            return (
+                <View>
+              {/* this is the card component for post */}
+              <View style={style.card}>
+                {/* Card Header */}
+                <View style={style.cardHeader}>
+                  <TouchableOpacity onPress={()=>this.props.navigation.navigate("ShopOffers")}>
+                  <View style={{flexDirection:"row"}}>
+                    {/* logo */}
+                  <Image source={require("../img/logo/mp.png")} style={style.profileImage}/>
+                  {/* name and time */}
+                  <View style={{flexDirection:"column",paddingLeft:15}}>
+                    <Text style={style.name}>{feeds.feed_title}{feeds.id}</Text>
+                    <Text style={style.postTime}>{feeds.created_at}</Text>
+                  </View>
+                  </View>
+                  </TouchableOpacity>
+                  {/* follow button */}
+                  <View style={{flexDirection:"row"}}>
+                  
+                  {/* follow and unfollow button */}
+                  <View>
+                  { !follow[feeds.id] ?
+                  <TouchableOpacity style={[style.followButton,{borderColor:"transparent",alignItems:"center",backgroundColor:"#326bf3"}]}
+                   onPress={()=>this.follow(feeds.id)}>            
+                        <Text style={style.followButtonText}>FOLLOW 
+                        <Icon name="add-outline" color="#fff" type="ionicon"  style={{top:6.2,left:1}} size={22}/>
+                        </Text>
+                  </TouchableOpacity> 
+                  :
+                  <TouchableOpacity style={[style.followButton,{backgroundColor:"#000"}]} 
+                  onPress={()=>this.follow(feeds.id)}>            
+                        <Text style={[style.followButtonText,{color:"#fff",top:-1,left:-1}]}>UNFOLLOW</Text>
+                        </TouchableOpacity>
+                        }
+                  </View>
+                  
+                    <Text style={{alignContent:"flex-end",top:5,left:5}}
+                    onPress={() => this.RBSheet.open()}>
+  
+                      <Icon name="ellipsis-vertical" type="ionicon" size={25}/>
+                    </Text>
+                    </View>
+                </View>
+  
+                 {/* Bottom Sheet for Post options */}
+  
+                 <RBSheet
+                              ref={ref=>{this.RBSheet = ref;}}
+                              animationType="slide"
+                              closeOnDragDown={true}
+                              closeOnPressMask={true}
+                              height={220}
+                              customStyles={{
+                                  container: {
+                                      borderTopRightRadius: 20,
+                                      borderTopLeftRadius: 20,
+                                    },
+                              draggableIcon: {
+                                  backgroundColor: ""
+                              }
+                              }}
+                          >
+                              {/* bottom sheet elements */}
+                          <View >
+                              {/* new container search view */}
+                                  <View>
+                                      {/* to share */}
+                                      <View style={{flexDirection:"row",padding:10}}>
+                                      <TouchableOpacity style={{flexDirection:"row"}} 
+                                      onPress={()=>this.myShare(feeds.feed_share,"https://api.marketpluss.com/api/get_user_feeds"+feeds.id)}>
+                                          <View style={{backgroundColor:"#f5f5f5",
+                                          height:40,width:40,justifyContent:"center",borderRadius:50}}>
+                                          <Icon type="ionicon" name="share-social"/>
+                                          </View>
+                                          <Text style={[styles.h4,{alignSelf:"center",marginLeft:20}]}>
+                                          Share</Text>
+                                          </TouchableOpacity>
+                                      </View>
+  
+                                      {/* to unfollow */}
+                                      <View style={{flexDirection:"row",padding:10}} >
+                                        
+                                        <TouchableOpacity style={{flexDirection:"row"}} onPress={()=>this.deleteFeed(feeds.id)}>
+                                        <View style={{backgroundColor:"#f5f5f5",
+                                        height:40,width:40,justifyContent:"center",borderRadius:50}}>
+                                          <Icon type="ionicon" name="trash-outline"/>
+                                        </View>
+                                        <Text style={[styles.h4,{alignSelf:"center",marginLeft:20}]}>
+                                          Delete</Text>
+                                        </TouchableOpacity>
+                                       
+                                      </View>
+  
+                                      {/* to report */}
+                                      <View style={{flexDirection:"row",padding:10}}>
+                                       
+  
+                                          <TouchableOpacity style={{flexDirection:"row"}} onPress={()=>this.reportFeed(feeds.id)}>
+                                          <View style={{backgroundColor:"#f5f5f5",
+                                          height:40,width:40,justifyContent:"center",borderRadius:50}} >
+                                          <Icon type="ionicon" name="trash-bin"/>
+                                          </View>
+                                          <Text style={[styles.h4,{alignSelf:"center",marginLeft:20}]}
+                                          >Report</Text>
+                                          </TouchableOpacity>
+                                      </View>
+                                  </View>
+          
+         
+             
+                          </View>
+                          </RBSheet>
+  
+  
+                {/* Image */}
+                <View>
+                  <Image 
+                  source={{uri:global.image_url+feed.content_src}} 
+                  // source={require("../img/post.jpg")}
+                  style={style.postImage}
+                  PlaceholderContent={<ActivityIndicator size="small" color="#0000ff" />}/>
+                  <View style={{flexDirection:"row",justifyContent:"space-between"}}>
+                    <View style={{flexDirection:"row"}}>
+                    <Text 
+                   style={{margin:3, marginLeft:10}}>
+                  <Icon type="ionicon" name={object[feeds.id] ? "heart" : "heart-outline"}
+                  color={object[feeds.id] ? "red" : "black"}
+                  onPress={() => this.like(feeds.id)} size={30}/>
+
+                  </Text>
+    
+                  <Text style={{margin:5}}>
+                   <Icon type="ionicon" onPress={()=>this.props.navigation.navigate("Comments",{description:feeds.feed_description,
+                   time:feeds.created_at,title:feeds.feed_title,id:feeds.id})}
+                    name="chatbubble-outline"  size={25}/>
+                  </Text>
+    
+                  <Text style={{margin:5}} >
+                  <Icon type="ionicon" name="share-social-outline" size={25}
+                  onPress={()=>this.myShare(feeds.feed_share,"https://api.marketpluss.com/api/get_user_feeds"+feeds.id)}/>
+                  </Text>
+                  </View>
+  
+                  <View>
+                    {!save[feeds.id] ?
+                    <TouchableOpacity>
+                    <Text  style={{margin:5,justifyContent:"flex-end"}}>
+                    <Icon type="ionicon"  name= "bookmark-outline" 
+                    color="black" 
+                    onPress={() => this.save(feeds.id)}
+                    size={25} />
+                    </Text>
+                  </TouchableOpacity>
+                  :
+                  <TouchableOpacity>
+                  <Text  style={{margin:5,justifyContent:"flex-end"}}>
+                  <Icon type="ionicon"  name= "bookmark" 
+                  color="black" 
+                  onPress={() => this.save(feeds.id)}
+                  size={25} />
+                  </Text>
+                </TouchableOpacity>}
+                  </View>
+  
+                  </View>
+                  <Text style={{padding:10,fontFamily:"Roboto-Regular"}}
+                  numberOfLines={3}>{feeds.feed_description}
+                  </Text>
+                </View>
+      
+                {/* <View>
+                  <Icon type="ionicon" name="heart" />
+                </View> */}
+              </View>
+          </View>
+            )
+          }
+            
+          
+          )
+        })
+         
+        
+       
+       return(
+        <ScrollView style={{backgroundColor:'#f2f2f2'}}>
+          {feeds}
+        </ScrollView>
+       )
+     }
+       
+    }
+  }
+  
+export default Post;  
+
+
+
+
+
+//internal stylesheet 
+const style=StyleSheet.create({
+    
+    card:{
+      backgroundColor:"#fff",
+      marginBottom:10,
+     
+    },
+    cardHeader:{
+      flexDirection:"row",
+      padding:10,
+      justifyContent:"space-between",
+      // backgroundColor:"red"
+    },
+    profileImage:{
+        height:37,
+        width:37
+    },
+    name:{
+      fontFamily:"Raleway-SemiBold",
+      // fontSize:15,
+      fontSize:RFValue(11, 580),
+    },
+    postTime:{
+      fontFamily:"Roboto-Regular",
+      color:"grey"
+    },
+    postImage:{
+      width:Dimensions.get("window").width,
+      height:250
+      // height:"100%"
+
+    },followButton:{
+      borderRadius:25,
+      borderColor:"#000",
+      borderWidth:1,
+      alignItems:"center",
+      alignContent:"center",
+      justifyContent:"center",
+      // padding:5,
+      height:28,  
+      width:90,
+      top:5,
+      // left:5
+    },
+    followButtonText:{
+      fontFamily:"Roboto-SemiBold",
+      // fontSize:13,
+      fontSize:RFValue(9, 580),
+      // alignSelf:"center",
+      textAlign:"center",
+      top:-5.8,
+      left:3,
+      color:"#fff",
+    },
+    
+    unFollowButtonText:{
+      color:"#000",
+      fontFamily:"Roboto-SemiBold",
+      // fontSize:13,
+      fontSize:RFValue(9, 580),
+      // alignSelf:"center",
+      textAlign:"center",
+      top:0,
+      // left:3
+    },
+
+})

@@ -1,15 +1,125 @@
-import React, { useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, TextInput, Button } from 'react-native';
+import React, { Component, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground,ActivityIndicator , TextInput, Button } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Toast from 'react-native-simple-toast';
+
+class  EditProfileScreen extends Component {
+
+    constructor (props)
+    {
+        super(props);
+        this.state={
+            name:'',
+            email:'',
+            contact:'',
+            about_us:'',
+            isloading:false
+        }
+    }
+
+    componentDidMount ()
+    {
+        this.get_profile_data();
+    }
+
+    get_profile_data = () =>{
+
+        fetch(global.api_key+"get_user_profile", {
+            method: 'POST',
+            headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization':global.token 
+            }
+            }).then((response) => response.json())
+            .then((json) => {
+                console.warn(json)
+               if(!json.status){
+                  // Toast.show(json.msg)
+               }
+                else
+                {
+                    this.setState({data:json.data})
+                    this.setState({name:json.data.name})
+                    this.setState({contact:json.data.contact})
+                    this.setState({email:json.data.email})
+                    this.setState({about:json.data.about})
+                    // if(json.data.dob==null){
+                    // this.setState({chosenDate:this.state.chosenDate})
+                    // }
+                    // else{
+                    //     this.setState({chosenDate:json.data.dob})
+                    // }
+                }
+            })
+            .catch((error) => console.error(error))
+            .finally(() => {
+              this.setState({ isLoading: false });
+            });
+    }
 
 
-const EditProfileScreen = () => {
-    const refRBSheet = useRef();
+    detailsUpdate = () =>
+    {
+       
+       
+        let validation=/^[a-zA-Z" "]+$/;
+        let isValid = validation.test(this.state.name)
+        {
+            if(this.state.name == "")
+            {
+                Toast.show("User Name Field is required !");
+            }
+            else if(this.state.about == "")
+            {
+                Toast.show("About Field is required !");
+            }
+            else if(!isValid){
+                Toast.show("Enter a valid name !");
+            }
+            else{
+                this.setState({isloading:true});
+                var email=this.state.email;
+                var name=this.state.name;
+                var about=this.state.about;;
+                fetch(global.api_key+"update_profile", { 
+                    method: 'POST',
+                    headers: {    
+                        Accept: 'application/json',  
+                            'Content-Type': 'application/json',
+                            'Authorization':global.token 
+                            }, 
+                            body: JSON.stringify({  
+                                name:name, 
+                                email: email, 
+                                about:about,
+                                })}).then((response) => response.json())
+                                    .then((json) => {
+                                     
+                                        if(!json.status)
+                                        {
+                                            Toast.show(json.msg);
+                                            Toast.show("Profile Could not be Updated.");
+                                        }
+                                        else{
+                                            Toast.show("Profile Updated!");
+                                            this.props.navigation.navigate("Profile")
+                                        }
 
+                                        
+                                        return json;    
+                                    }).catch((error) => {  
+                                          
+                                        }).finally(() => {
+                                            this.setState({isloading:false})
+                                        });
+            }
+        }
+    }
 
-
-
+    render()
+    {
     return (
         <View style={{backgroundColor:'black',flex:1,paddingTop:30,paddingLeft:10,paddingRight:10}}>
             <Text  style={{color:'#eee',marginBottom:'5%'}}>Enter your Full name</Text>
@@ -26,7 +136,9 @@ const EditProfileScreen = () => {
                           color: '#eeeeee'
                       }]}
                       autoCapitalize="none"
-                     
+                     value={this.state.name}
+
+                     onChangeText={(text) => {this.setState({name:text})}}
                   />
              </View>
               <Text style={{color:'#eee',marginTop:'10%',marginBottom:'5%'}}>Enter your Email</Text>
@@ -44,7 +156,8 @@ const EditProfileScreen = () => {
                           color: '#eeeeee'
                       }]}
                       autoCapitalize="none"
-                     
+                      value={this.state.email}
+                      onChangeText={(text) => {this.setState({email:text})}}
                   />
                   
                   
@@ -66,7 +179,7 @@ const EditProfileScreen = () => {
                           color: '#eeeeee'
                       }]}
                       autoCapitalize="none"
-                     
+                      value={this.state.contact}
                   />
                   
                   
@@ -88,17 +201,19 @@ const EditProfileScreen = () => {
                           color: '#eeeeee'
                       }]}
                       autoCapitalize="none"
-                     
+                      value={this.state.about}
+
+                      onChangeText={(text) => {this.setState({about:text})}}
                   />
                   
                   
                 
               </View>
-
+              {!this.state.isloading ?
               <View style={styles.button}>
                 <TouchableOpacity
                     style={styles.signIn}
-                    onPress={()=>this.props.navigation.navigate('Home')}
+                    onPress={()=>this.detailsUpdate()}
                 >
                 <LinearGradient
                     colors={['#ff5b23', '#ff5b23']}
@@ -106,14 +221,20 @@ const EditProfileScreen = () => {
                 >
                     <Text style={[styles.textSign, {
                         color:'#fff'
-                    }]}>Complete Profile</Text>
+                    }]}>Update Profile</Text>
                 </LinearGradient>
                 </TouchableOpacity>
 
                 
-            </View>
+            </View>:
+            <View style={{height:100}}>
+            <ActivityIndicator size="large" color="#326bf3"
+            style={{top:35}}/>
+        </View>
+    }
         </View>
     );
+                }
 
 };
 

@@ -6,7 +6,6 @@ import {
   useColorScheme,
   View
 } from 'react-native';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -14,7 +13,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createStackNavigator} from '@react-navigation/stack';
+import { DrawerContent } from './Screens/DrawerContent';
 
+
+//Screen Imports
 import Home from './Screens/Home';
 import Profile from './Screens/Profile';
 import Podcast from './Screens/Podcast';
@@ -30,16 +32,26 @@ import PodcastList from './Screens/PodcastList';
 import NewsContent from './Screens/NewsContent';
 import VideoContent from './Screens/VideoContent';
 import CreatePost from './Screens/CreatePost';
+import Splash from './Screens/Splash';
+import {AuthContext} from './AuthContextProvider';
+import Comments from './Screens/Comments';
 
-import { DrawerContent } from './Screens/DrawerContent';
-
-
+//Navigators
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
 
+
+//links
 global.api_key="https://healthyrabbit.in/hnn/public/api/";
 global.uri="https://healthyrabbit.in/hnn/public/";
-const TabNavi = () =>
+global.login_data=true;
+
+
+//tab navigation
+class TabNav extends Component
 {
+  render(){
     return (
       <Tab.Navigator screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
@@ -81,32 +93,31 @@ const TabNavi = () =>
       }}
 
       >
-        <Tab.Screen name="Home" component={StackNavi} />
+        <Tab.Screen name="Home" component={StackNav} />
         <Tab.Screen name="Podcast" component={Podcast} />
         <Tab.Screen name="CreatePost" component={CreatePost} />
         <Tab.Screen name="Video" component={Videos} />
         <Tab.Screen name="Profile" component={Profile} />
       </Tab.Navigator>
     )
+  }
 }
 
-const Stack = createStackNavigator();
-
-class StackNavi extends Component
+//StackNav
+class StackNav extends Component
 {
   render()
   {
     return (
         <Stack.Navigator>
-           <Stack.Screen options={{headerShown: false}}name="Home" component={Home} />
-         
+          <Stack.Screen options={{headerShown: false}}name="Home" component={Home} />
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="EditProfile" component={EditProfile} />
           <Stack.Screen name="About Us"  component={Home} />
           <Stack.Screen name="PrivacyPolicy"  component={Home} />
           <Stack.Screen name="LoginView"  component={Home} />
           <Stack.Screen name="SongsList" component={SongsListScreen} />
-          <Stack.Screen  options={{headerShown: false}} name="SongsPlay" component={SongsPlayScreen} />
+          <Stack.Screen name="SongsPlay" component={SongsPlayScreen} options={{headerShown: false}}/>
           <Stack.Screen name="PodcastList" component={PodcastList} />
           <Stack.Screen name="NewsContent" component={NewsContent} />
           <Stack.Screen name="VideoContent" component={VideoContent} />
@@ -116,53 +127,60 @@ class StackNavi extends Component
 }
 
 
-class StackNavi_logout extends Component
-{
-  render()
-  {
+// class StackNav_logout extends Component
+// {
+//   render()
+//   {
+//     return (
+//         <Stack.Navigator>
+//           <Stack.Screen options={{headerShown: false}}name="SignIn" component={SignIn} />
+//           <Stack.Screen options={{headerShown: false}} name="Otp" component={Otp}/>
+//           <Stack.Screen options={{headerShown: false}}name="FirstUserProfile" component={FirstUserProfile} />
+//         </Stack.Navigator>
+//       )
+//   }
+// }
+
+class DrawerNav extends Component{
+  render(){
     return (
-        <Stack.Navigator>
-          <Stack.Screen options={{headerShown: false}}name="SignIn" component={SignIn} />
-          <Stack.Screen options={{headerShown: true}}name="Otp" component={Otp} option={{headerShown:false}}/>
-          <Stack.Screen options={{headerShown: false}}name="FirstUserProfile" component={FirstUserProfile} />
-        </Stack.Navigator>
-      )
+      <SafeAreaView style={styles.safeArea}>
+      <Drawer.Navigator screenOptions={{headerShown:false}} initialRouteName="Home" drawerContent={props=> <DrawerContent {...props} />} >
+      <Drawer.Screen options={{headerShown:false,
+              drawerIcon: config => <Icon
+                  size={23}
+                  name={Platform.OS === 'android' ? 'home' : 'home'}></Icon>
+          }}  name="Home" component={TabNav} />
+          {/* <Drawer.Screen options={{headerShown:false,
+              drawerIcon: config => <Icon
+                  size={23}
+                  name={Platform.OS === 'android' ? 'home' : 'home'}></Icon>
+          }}  name="Home" component={TabNavi} />
+  
+          <Drawer.Screen options={{
+              drawerIcon: config => <Icon
+                  size={23}
+                  name={Platform.OS === 'android' ? 'article' : 'article'}></Icon>
+          }}   name="About Us" component={Home} />
+  
+          <Drawer.Screen options={{
+              drawerIcon: config => <Icon
+                  size={23}
+                  name={Platform.OS === 'android' ? 'visibility' : 'visibility'}></Icon>
+          }}   name="Privacy Policy" component={Home} />
+  
+          <Drawer.Screen options={{
+              drawerIcon: config => <Icon
+                  size={23}
+                  name={Platform.OS === 'android' ? 'share' : 'share'}></Icon>
+          }}  name="Invite Friends" component={Home} /> */}
+  
+        </Drawer.Navigator>
+        </SafeAreaView>
+    )
   }
 }
 
-const DrawerNavi = () =>
-{
-  return (
-    <SafeAreaView style={styles.safeArea}>
-    <Drawer.Navigator screenOptions={{headerShown:false}} initialRouteName="Home"  drawerContent={props => <DrawerContent {...props} />} >
-        <Drawer.Screen options={{headerShown:false,
-            drawerIcon: config => <Icon
-                size={23}
-                name={Platform.OS === 'android' ? 'home' : 'home'}></Icon>
-        }}  name="Home" component={TabNavi} />
-
-        <Drawer.Screen options={{
-            drawerIcon: config => <Icon
-                size={23}
-                name={Platform.OS === 'android' ? 'article' : 'article'}></Icon>
-        }}   name="About Us" component={Home} />
-
-        <Drawer.Screen options={{
-            drawerIcon: config => <Icon
-                size={23}
-                name={Platform.OS === 'android' ? 'visibility' : 'visibility'}></Icon>
-        }}   name="Privacy Policy" component={Home} />
-
-        <Drawer.Screen options={{
-            drawerIcon: config => <Icon
-                size={23}
-                name={Platform.OS === 'android' ? 'share' : 'share'}></Icon>
-        }}  name="Invite Friends" component={Home} />
-
-      </Drawer.Navigator>
-      </SafeAreaView>
-  )
-}
 
 const styles = StyleSheet.create({
  safeArea: {
@@ -171,52 +189,150 @@ const styles = StyleSheet.create({
   backgroundColor: '#15558d'
  }
 })
-const Drawer = createDrawerNavigator();
+
 
 class App extends Component {
-  constructor(props) {  
-    super(props);  
-    this.state = {  
-      userToken:"no"
-    };  
-}
-  render()
-  {
-    try {
-       AsyncStorage.getItem('user_login').then((value) =>
-      {
-          if(value != null)
-          {
-            // alert(value)
-              this.setState({userToken:value});
-          }
-      })
-    } catch(e) {
-      // error reading value
+  constructor(props) {
+    super(props);
+    this.state = {
+      isloading: true,
+      islogin: false,
+      step: 'done'
+    }
+  }
+
+  componentDidMount() {
+    AsyncStorage.getItem('@auth_login', (err, result) => {
+      // console.warn(result)
+      if (JSON.parse(result) != null) {
+        this.setState({ islogin: true, step: JSON.parse(result).use_type });
+        global.token = JSON.parse(result).token;
+        global.user = JSON.parse(result).user_id;
+        global.step = this.state.step
+
+      }
+    });
+    setTimeout(() => {
+      this.setState({ isloading: false })
+    }, 1000);
     }
 
-    if(this.state.userToken=='yes')
-    {
-      return (
-      
-        <NavigationContainer>
-        
-          <DrawerNavi/>
-        </NavigationContainer>
-      );
+    login = (step) => {
+      this.setState({ islogin: true, step: step });
     }
-    else{
 
-    } return (
+    logout = () => {
+      this.setState({ islogin: false })
+
+      AsyncStorage.setItem('@auth_login', '');
+      global.token=null;
       
-        <NavigationContainer>
-        
-          <StackNavi_logout/>
-        </NavigationContainer>
-      );
-    // alert(this.state.userToken);
+    }
+
+
+    render() {
+      if (this.state.isloading) {
+        return (
+          <Splash />
+        )
+      }
+      else {
+        return (
+          <AuthContext.Provider value={{ login: this.login, logout: this.logout }}>
+            <NavigationContainer>
+              <Stack.Navigator >
+                {!this.state.islogin ? (
+                  <>
+                    <Stack.Screen options={{headerShown: false}}name="SignIn" component={SignIn} />
+                    <Stack.Screen options={{headerShown: false}} name="Otp" component={Otp}/>
+                  </>
+                )
+                  :
+                  (
+                    (this.state.islogin && this.state.step == 'steps') ?
+                      <>
+                        <Stack.Screen options={{headerShown: false}}name="FirstUserProfile" component={FirstUserProfile} />
+                      </>
+                      :
+                      // User is signed in  
+                      <>
+                        {/* <Stack.Screen options={{headerShown: false}} name="Home" component={Home} /> */}
+
+                        {/* <Stack.Screen name="Drawer" component={DrawerNav} options={{headerShown: false}}/> */}
+
+                        <Stack.Screen name="Home" component={TabNav} options={{headerShown: false}}/>
+
+                        <Stack.Screen name="Profile" component={Profile} />
+
+                        <Stack.Screen name="EditProfile" component={EditProfile} />
+
+                        {/* <Stack.Screen name="About Us"  component={Home} />
+
+                        <Stack.Screen name="PrivacyPolicy"  component={Home} />
+
+                        <Stack.Screen name="LoginView"  component={Home} /> */}
+
+                        <Stack.Screen name="SongsList" component={SongsListScreen} />
+
+                        <Stack.Screen name="SongsPlay" component={SongsPlayScreen} options={{headerShown: false}}/>
+                        
+                        <Stack.Screen name="PodcastList" component={PodcastList} />
+
+                        <Stack.Screen name="NewsContent" component={NewsContent} />
+
+                        <Stack.Screen name="VideoContent" component={VideoContent} />
+                        <Stack.Screen name="Comments" component={Comments} options={{headerShown: false}}/>
+                        
+                      </>
+                  )
+                }
+              </Stack.Navigator>
+            </NavigationContainer>
+          </AuthContext.Provider>
+        )
+      }
+    }
+
     
-  };
+
+
+  // render()
+  // {
+  //   try {
+  //      AsyncStorage.getItem('user_login').then((value) =>
+  //     {
+  //         if(value != null)
+  //         {
+  //           // alert(value)
+  //             this.setState({userToken:value});
+  //         }
+  //     })
+  //   } catch(e) {
+  //     // error reading value
+  //   }
+
+  //   if(this.state.userToken=='yes')
+  //   {
+  //     return (
+      
+  //       <NavigationContainer>
+        
+  //         <DrawerNavi/>
+  //       </NavigationContainer>
+  //     );
+  //   }
+  //   else{
+
+  //   } return (
+      
+  //       <NavigationContainer>
+        
+  //         <StackNav_logout/>
+  //       </NavigationContainer>
+  //     );
+  //   // alert(this.state.userToken);
+    
+  // };
 };
 
 
