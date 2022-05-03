@@ -45,6 +45,8 @@ const Drawer = createDrawerNavigator();
 //links
 global.api_key="https://healthyrabbit.in/hnn/public/api/";
 global.uri="https://healthyrabbit.in/hnn/public/";
+
+global.image_url="https://hnn24x7.com/wp-content/uploads/";
 global.login_data=true;
 
 
@@ -78,8 +80,8 @@ class TabNav extends Component
           }
           
           
-          else if (route.name === 'CreatePost') {
-            iconName = focused ? 'create' : 'create-outline';
+          else if (route.name === 'LiveTv') {
+            iconName = focused ? 'tv' : 'tv-outline';
           }
 
           // You can return any component that you like here!
@@ -89,14 +91,16 @@ class TabNav extends Component
       tabBarOptions={{
         activeTintColor: '#ff5d23',
         inactiveTintColor: '#000000',
-        showLabel:false
+        showLabel:true
       }}
 
       >
         <Tab.Screen name="Home" component={StackNav} />
         <Tab.Screen name="Podcast" component={Podcast} />
-        <Tab.Screen name="CreatePost" component={CreatePost} />
-        <Tab.Screen name="Video" component={Videos} />
+        <Tab.Screen name="Video" component={CreatePost} />
+        <Tab.Screen name="LiveTv" component={Videos} />
+        
+      
         <Tab.Screen name="Profile" component={Profile} />
       </Tab.Navigator>
     )

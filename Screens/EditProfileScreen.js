@@ -121,19 +121,19 @@ class  EditProfileScreen extends Component {
     render()
     {
     return (
-        <View style={{backgroundColor:'black',flex:1,paddingTop:30,paddingLeft:10,paddingRight:10}}>
-            <Text  style={{color:'#eee',marginBottom:'5%'}}>Enter your Full name</Text>
+        <View style={{backgroundColor:'white',flex:1,paddingTop:30,paddingLeft:10,paddingRight:10}}>
+            <Text  style={{color:'#222',marginBottom:'5%'}}>Enter your Full name</Text>
               <View style={styles.action}>
                   <Ionicons 
                       name="person-outline"
-                      color='#eeeeee'
+                      color='#222eee'
                       size={20}
                   />
                   <TextInput 
                       placeholder="Your Full name"
                       placeholderTextColor="#666666"
                       style={[styles.textInput, {
-                          color: '#eeeeee'
+                          color: '#222eee'
                       }]}
                       autoCapitalize="none"
                      value={this.state.name}
@@ -141,19 +141,19 @@ class  EditProfileScreen extends Component {
                      onChangeText={(text) => {this.setState({name:text})}}
                   />
              </View>
-              <Text style={{color:'#eee',marginTop:'10%',marginBottom:'5%'}}>Enter your Email</Text>
+              <Text style={{color:'#222',marginTop:'10%',marginBottom:'5%'}}>Enter your Email</Text>
               <View style={styles.action}>
                   
                   <Ionicons 
                       name="mail-outline"
-                      color='#eeeeee'
+                      color='#222eee'
                       size={20}
                   />
                   <TextInput 
                       placeholder="Your Email"
                       placeholderTextColor="#666666"
                       style={[styles.textInput, {
-                          color: '#eeeeee'
+                          color: '#222eee'
                       }]}
                       autoCapitalize="none"
                       value={this.state.email}
@@ -164,19 +164,19 @@ class  EditProfileScreen extends Component {
                 
               </View>
 
-              <Text style={{color:'#eee',marginTop:'10%',marginBottom:'5%'}}>Enter your Contact</Text>
+              <Text style={{color:'#222',marginTop:'10%',marginBottom:'5%'}}>Enter your Contact</Text>
               <View style={styles.action}>
                   
                   <Ionicons 
                       name="mail-outline"
-                      color='#eeeeee'
+                      color='#222eee'
                       size={20}
                   />
                   <TextInput 
                       placeholder="Your Contact"
                       placeholderTextColor="#666666"
                       style={[styles.textInput, {
-                          color: '#eeeeee'
+                          color: '#222eee'
                       }]}
                       autoCapitalize="none"
                       value={this.state.contact}
@@ -186,19 +186,19 @@ class  EditProfileScreen extends Component {
                 
               </View>
 
-              <Text style={{color:'#eee',marginTop:'10%',marginBottom:'5%'}}>About You</Text>
+              <Text style={{color:'#222',marginTop:'10%',marginBottom:'5%'}}>About You</Text>
               <View style={styles.action}>
                   
                   <Ionicons 
                       name="person-outline"
-                      color='#eeeeee'
+                      color='#222eee'
                       size={20}
                   />
                   <TextInput 
                       placeholder="Describe Yourself"
                       placeholderTextColor="#666666"
                       style={[styles.textInput, {
-                          color: '#eeeeee'
+                          color: '#222eee'
                       }]}
                       autoCapitalize="none"
                       value={this.state.about}

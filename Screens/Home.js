@@ -3,16 +3,18 @@ import {
   SafeAreaView,
   StyleSheet,
   View,Dimensions,ActivityIndicator,
-  ScrollView,Share,Pressable,TouchableOpacity 
+  ScrollView,Share,Pressable,TouchableOpacity,FlatList 
 } from 'react-native';
 
 import { Image,Chip,Tab ,Text,Icon,Header } from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
-
-
+import ProgressiveFastImage from "@freakycoder/react-native-progressive-fast-image";
+import { WebView } from 'react-native-webview';
 const win = Dimensions.get('window');
 const ratio = win.width/541; //541 is actual image width
-
+import HTMLView from 'react-native-htmlview';
+import LikeDislike  from '../Components/LikeDislike.js';
+import moment from'moment';
 class Home extends Component
 {
 
@@ -22,7 +24,9 @@ class Home extends Component
     this.state={
       data:[],
       isLoading:true,
-      news_category:0
+      news_category:0,
+      page:1,
+      load_more:false
     }
   }
   
@@ -50,23 +54,32 @@ class Home extends Component
   renderRightComponent()
   {
     return(
-      <Icon
-              name='notifications-outline'
-              type='ionicon' 
-              color='black' style={{marginTop:5}} /> 
+      <></>
+      // <Icon
+      //         name='notifications-outline'
+      //         type='ionicon' 
+      //         color='black' style={{marginTop:5}} /> 
     )
   }
 
   componentDidMount()
   {
-    this.fetch_news();
+    this.fetch_news(0,1);
   }
 
-
-  fetch_news = ()=>{
-    this.setState({ isLoading: true});
-    console.warn(global.api_key+'news?n_c_id='+this.state.news_category);
-    fetch(global.api_key+'news?n_c_id='+this.state.news_category, {
+   fetch_news = (cat,page)=>{
+  
+    if(cat == 0)
+    {
+      var urr='https://hnn24x7.com/wp-json/wp/v2/posts?page='+page;
+    }
+    else
+    {
+      var urr='https://hnn24x7.com/wp-json/wp/v2/posts?categories='+cat+'&&page='+page;
+    }
+  
+   // console.log('https://hnn24x7.com/wp-json/wp/v2/posts?categories='+this.state.news_category+'&&page='+page);
+    fetch(urr, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -76,25 +89,162 @@ class Home extends Component
     })
       .then(response => response.json())
       .then(json => {
-        if(json.status)
-        {
-          this.setState({ data: json.data });
-        }
-          
+        
+           this.setState({ data: [...this.state.data,...json] });
+      
          // console.warn(this.state.data);
       })
       .catch(error => console.error(error))
       .finally(() => {
-        this.setState({ isLoading: false,});
+        this.setState({ isLoading: false,load_more:false});
       });
   }
 
+  // fetch_news = ()=>{
+  //   var page=1;
+  //   this.setState({ isLoading: true});
+  //   fetch(global.api_key+'news?page='+page+'&&n_c_id='+this.state.news_category, {
+  //     method: 'GET',
+  //     headers: {
+  //       Accept: 'application/json',
+  //       'Content-Type': 'application/json',
+  //       Authorization: global.token,
+  //     },
+  //   })
+  //     .then(response => response.json())
+  //     .then(json => {
+  //       if(json.status)
+  //       {
+  //          this.setState({ data: json.data.data });
+  //       }
+          
+  //        // console.warn(this.state.data);
+  //     })
+  //     .catch(error => console.error(error))
+  //     .finally(() => {
+  //       this.setState({ isLoading: false,});
+  //     });
+  // }
+
   activate_cat = (cat) =>
   {
-    this.setState({news_category:cat});
-    this.fetch_news();
+    this.setState({news_category:cat,page:1,isLoading:true,data:[]});
+    this.fetch_news(cat,1);
   }
   
+
+  load_more = ()=>
+    {
+       
+        var data_size=this.state.data.length;
+        var page=this.state.page+1;
+        if((data_size) >9)
+        {
+            this.setState({page:page,load_more:true});
+            this.fetch_news(this.state.news_category,page);
+        }
+    }
+
+    onShare = async (news_title,news_url,news_msg) => {
+      try {
+        const result = await Share.share({
+          title: news_title,
+          url: news_url,
+          message: news_msg,
+  
+        });
+  
+        if (result.action === Share.sharedAction) {
+          if (result.activityType) {
+            // shared with activity type of result.activityType
+          } else {
+            // shared
+          }
+        } else if (result.action === Share.dismissedAction) {
+          // dismissed
+        }
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+  
+    renderItem= ({item,id}) => 
+    (
+      <View style={styles.card}>
+                <View style={{ flexDirection:'row',width:'100%' }}>
+                  <View style={{ flexDirection:'row',width:35 }}>
+                <Image 
+                  style={{width:30,height:30}} 
+                  source= {{uri: 'https://healthyrabbit.in/hnn/public/assets/images/fev.jpg'}}
+                />
+                </View>
+              <View style={{flexDirection:'column',width:'80%'}}>
+              <Text h5 style={{marginLeft:10,fontWeight:'500'}}> HNN 24*7 </Text>
+              <Text style={{marginLeft:10}}>{moment(item.modified_gmt).fromNow()}</Text>
+              </View>
+
+              <View style={{alignSelf:'flex-end'}}>
+              <Pressable onPress={()=>this.onShare(item.title.rendered,item.link,item.excerpt.rendered)} >
+              <Icon
+              name='share-social-outline'
+              type='ionicon' 
+              color='gray' style={{marginRight:15}} /> 
+            </Pressable>
+              </View>
+              </View>
+              <TouchableOpacity  onPress={()=>{this.props.navigation.navigate('NewsContent',{
+                  item: item })}}>
+                <Text h4 style={{marginTop:10,fontSize:16}}>{item.title.rendered}</Text>
+<HTMLView
+        value={item.excerpt.rendered}
+        stylesheet={styles}
+      />
+  
+              </TouchableOpacity>
+            
+              <Image onPress={()=>{this.props.navigation.navigate('NewsContent',{
+                  item: item })}}
+                style={styles.FeedImage} 
+                source= {{uri: item.yoast_head_json.twitter_image}}
+              PlaceholderContent={<ActivityIndicator size="small" color="#0000ff" />}
+             />
+            
+            {/* <View style={{flex:1,flexDirection:'row',marginTop:10}}> */}
+
+            {/* <LikeDislike feed_id={news.id} like_count={80} islike={true}/> */}
+            {/* <Pressable onPress={this.like_dislike_news}>
+            <Icon
+              name={this.state.liked ? "heart" : "heart-outline"}
+              size={28}
+              type='ionicon'
+              color={this.state.liked ? "red" : "black"}
+
+              style={{flex:1,flexDirection:'row',marginRight:15,marginLeft:15}}
+            />
+        </Pressable> */}
+
+
+        {/* <Pressable onPress={()=>{this.props.navigation.navigate('Comments',{itemId:news.id,description:news.short_description})}}>
+              <Icon
+              name='chatbubble-outline'
+              type='ionicon' 
+              color='gray' style={{flex:1,flexDirection:'row',marginRight:15}}/> 
+              </Pressable>
+
+              
+              <Pressable onPress={()=>this.onShare(news.heading,global.uri+"news-content/"+news.id,news.short_description)} >
+              <Icon
+              name='share-social-outline'
+              type='ionicon' 
+              color='gray' style={{marginRight:15}} /> 
+            </Pressable>
+            <Pressable >
+    
+              </Pressable> */}
+            {/* </View> */}
+          </View>
+    )
+
     render()
     {
       // this.props.navigation.openDrawer();
@@ -114,17 +264,31 @@ class Home extends Component
                 
               }}
             />
-            <Category cat_act={this.activate_cat}/>
+            <Category cat_act={this.activate_cat} active_cat={this.state.news_category}/>
             {(!this.state.isLoading)?
 
               (this.state.data.length>0)?
-            <Feeds navigation={this.props.navigation} feed={this.state.data}/>
+              <FlatList
+                            data={this.state.data}
+                            renderItem={this.renderItem}
+                            keyExtractor={item => item.id}
+                            style={{flex:1}}
+                            onEndReached={()=>{this.load_more()}}
+                            onEndReachedThreshold={0.5}
+                            />
+            //  <Feeds navigation={this.props.navigation} feed={this.state.data}/>
             :
-            <View><Text style={{fontSize:'16',alignSelf:'center'}}>No News Found</Text></View>
+            <View><Text style={{fontSize:16,alignSelf:'center'}}>No News Found</Text></View>
             :
             <ActivityIndicator size="large" color="orange" />
             }
-            
+
+            {(this.state.load_more)?
+            <ActivityIndicator size="large" color="orange" />
+            :
+            <></>
+
+            }
             
           </View>
       )
@@ -147,7 +311,7 @@ class Category extends Component
 
   componentDidMount()
   {
-    fetch(global.api_key+'news_cat')
+    fetch('https://hnn24x7.com/wp-json/wp/v2/categories')
     .then((response) => response.json())
     .then((json) => {
       this.setState({ data: json });
@@ -175,11 +339,23 @@ class Category extends Component
     }
     else{
       let news_cat = data.map((news,id) => {
-        return(
-          <TouchableOpacity onPress={()=>{this.props.cat_act(news.id)}} style={styles.border1}>
-          <Text style={{ color: '#5d5d5d', fontSize: 14, alignSelf: "center", }}>{news.n_c_categories}</Text>
-        </TouchableOpacity >
-        )
+        if(this.props.active_cat==news.id)
+          {
+            return(
+              <TouchableOpacity  onPress={()=>{this.props.cat_act(news.id)}} style={styles.border1}>
+              <Text style={{ color: '#eee', fontSize: 14, alignSelf: "center", }}>{news.name}</Text>
+            </TouchableOpacity >
+            )
+          }
+          else
+          {
+            return(
+              <TouchableOpacity onPress={()=>{this.props.cat_act(news.id)}} style={styles.border2}>
+              <Text style={{ color: '#5d5d5d', fontSize: 14, alignSelf: "center", }}>{news.name}</Text>
+            </TouchableOpacity >
+            )
+          }
+        
       })
      
       return (
@@ -188,9 +364,18 @@ class Category extends Component
           showsHorizontalScrollIndicator={false}
           horizontal={true} style={{backgroundColor:'#ffffff'}}
       >
+        {(this.props.active_cat==0)?
         <TouchableOpacity onPress={()=>{this.props.cat_act(0)}} style={styles.border1}>
-          <Text style={{ color: '#5d5d5d', fontSize: 14, alignSelf: "center", }}>All</Text>
-        </TouchableOpacity>
+        <Text style={{ color: '#eee', fontSize: 14, alignSelf: "center", }}>All</Text>
+      </TouchableOpacity>
+      :
+      <TouchableOpacity onPress={()=>{this.props.cat_act(0)}} style={styles.border2}>
+        <Text style={{ color: '#5d5d5d', fontSize: 14, alignSelf: "center", }}>All</Text>
+      </TouchableOpacity>
+      }
+        
+
+
           {news_cat}
             </ScrollView>
             </View>
@@ -201,135 +386,15 @@ class Category extends Component
 }
 
 
-//component for the catch the news from the api
-class Feeds extends Component
-{
-  constructor(props) {
-    super(props);
-    // Don't call this.setState() here!
-    this.state = { counter: 0,
-      liked:false,
-      news_category:0
-    };
-  }
-
-  onShare = async (news_title,news_url,news_msg) => {
-    try {
-      const result = await Share.share({
-        title: news_title,
-        url: news_url,
-        message: news_msg,
-
-      });
-
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
-
-  get_vendor_category=(cat_id)=>{
-    this.setState({isloading:true,select_cat:cat_id});
-
-    this.fetch_data(cat_id);
- 
-  }
-
-  like_dislike_news = () =>
-  {
-      var like_btn = this.state.liked;
-
-      if(like_btn)
-      {
-        this.setState({'liked':false})
-      }
-      else{
-        this.setState({'liked':true})
-      }
-  }
-
-  render()
-  {
-      let news = this.props.feed.map((news,id) => {
-        return(
-               <View style={styles.card}>
-                <View style={{ flexDirection:'row' }}>
-                <Image 
-                  style={{width:25,height:25}} 
-                  source= {{uri: 'https://healthyrabbit.in/hnn/public/assets/images/fev.jpg'}}
-                />
-    
-              <Text h5 style={{marginLeft:10}}> HNN 24*7 </Text>
-              </View>
-              <View>
-                <Text h4 style={{marginTop:10}} onPress={()=>{this.props.navigation.navigate('NewsContent',{
-                  itemId: news.id })}}>{news.heading}</Text>
-                <Text style={{marginTop:10}}>{news.short_description}</Text>
-              </View>
-            
-              <Image 
-                style={styles.FeedImage} 
-                source= {{uri: global.uri+ news.news_img}}
-              PlaceholderContent={<ActivityIndicator size="small" color="#0000ff" />}
-             />
-            
-            <View style={{flex:1,flexDirection:'row',marginTop:10}}>
-            <Pressable onPress={this.like_dislike_news}>
-            <Icon
-              name={this.state.liked ? "heart" : "heart-outline"}
-              size={28}
-              type='ionicon'
-              color={this.state.liked ? "red" : "black"}
-
-              style={{flex:1,flexDirection:'row',marginRight:15,marginLeft:15}}
-            />
-        </Pressable>
-
-
-        <Pressable onPress={()=>{this.props.navigation.navigate('Comments',{itemId:news.id,description:news.short_description})}}>
-              <Icon
-              name='chatbubble-outline'
-              type='ionicon' 
-              color='gray' style={{flex:1,flexDirection:'row',marginRight:15}}/> 
-              </Pressable>
-
-              
-              <Pressable onPress={()=>this.onShare(news.heading,global.uri+"news-content/"+news.id,news.short_description)} >
-              <Icon
-              name='share-social-outline'
-              type='ionicon' 
-              color='gray' style={{marginRight:15}} /> 
-            </Pressable>
-            <Pressable >
-    
-              </Pressable>
-            </View>
-          </View>
-        )});
-                
-    
-     
-      return (
-        <ScrollView style={{backgroundColor:'#f2f2f2'}}>
-          {news}
-            </ScrollView>
-      );
-      }
-    }
-
 
 export default Home;
 
 const styles = StyleSheet.create({
+    a: {
+      fontWeight: '100',
+      color: '#222', // make links coloured pink
+    },
+ 
   Container:
   {
      flex: 1,
@@ -338,6 +403,21 @@ const styles = StyleSheet.create({
 
   },
   border1: {
+    color: "black",
+    borderWidth: 1,
+    borderColor: "black",
+    paddingLeft:15,
+    paddingRight:15,
+    paddingTop:5,
+    paddingBottom:5,
+    borderRadius: 20,
+    marginLeft: 15,
+    marginBottom: 10,
+    marginTop: 10,
+    backgroundColor:'black'
+
+  },
+  border2: {
     color: "#5d5d5d",
     borderWidth: 1,
     borderColor: "#5d5d5d",

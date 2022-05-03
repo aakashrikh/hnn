@@ -20,21 +20,23 @@ if (Platform.OS === 'android' && Platform.Version >= 21) {
 
 const Recomm = (props) => {
   return (
+    <View>
     <View styles={styles.recommList}>
       <TouchableCmp onPress={props.onSelect}>
         <View style={styles.main}>
-          <View style={styles.card}>
+        
             <Image
               source={{uri: props.artwork}}
-              style={{height: '100%', width: '100%', flex: 1}}
+              style={{height: 150, width: 150,alignSelf:'center',margin:5}}
             />
-          </View>
+        
           <View style={styles.infoContainer}>
             <Text style={styles.title}>{props.title}</Text>
             <Text style={styles.artist}>{props.artist}</Text>
           </View>
         </View>
       </TouchableCmp>
+    </View>
     </View>
   );
 };
@@ -44,6 +46,7 @@ const styles = StyleSheet.create({
     width: height / 4.68,
     padding: height / 37.5,
     marginLeft: height / 15,
+    backgroundColor:'red'
   },
   main: {
     justifyContent: 'center',
@@ -62,11 +65,14 @@ const styles = StyleSheet.create({
     marginRight: height / 37.5,
   },
   title: {
-    color: 'white',
-    fontSize: height / 41.6,
+    color: '#222',
+    fontSize: 18,
+    fontWeight:'bold',
+    alignSelf:'center'
   },
   artist: {
     color: 'gray',
+    alignSelf:'center'
   },
 });
 

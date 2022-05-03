@@ -1,12 +1,12 @@
 import React from 'react'
 import { Component } from 'react';
 
-import { View, Text, StyleSheet, Image, ImageBackground, TouchableOpacity, Button, ScrollView,ActivityIndicator } from 'react-native'
+import { View,Dimensions, Text, StyleSheet, Image, ImageBackground, TouchableOpacity, Button, ScrollView,ActivityIndicator } from 'react-native'
 
 import Card from '../Components/videocomp/Card';
 import {LivePlayer} from "react-native-dbb-rtmp";
 
-class Video extends Component {
+const {width, height} = Dimensions.get('window');class Video extends Component {
 
    constructor(props) {
       super(props)
@@ -19,16 +19,17 @@ class Video extends Component {
       return (
          <ImageBackground style={styles.Container}>
             <View>
-               <View style={{marginTop:30}}>
-               <Text style={styles.title}>LIVE TV 
-               <Image style={{width:50,height:30}} source={require('../assets/live.png')}/>  </Text>
-               </View>
-               <LivePlayer source={{uri:"rtmp://103.38.203.172:1935/live/myStream"}}
+            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text onPress={()=>{this.props.navigation.navigate('hf')}} style={styles.header}>Live Tv <Image style={{width:50,height:30}} source={require('../assets/live.png')}/></Text>
+        </View>
+               
+               <LivePlayer 
+               source={{uri:"rtmp://thelegitpro.in/hnnnews/hnnnews"}}
                   ref={(ref) => {
                   this.player = ref
                 }}
 
-               style={{ height: 200, width: '100%',marginTop:20 }}
+               style={{ height: 250, width: '100%',marginTop:20 }}
                paused={false}
                muted={false}
                bufferTime={300}
@@ -38,14 +39,14 @@ class Video extends Component {
                onLoad={()=>{}}
                onEnd={()=>{}}
             />
-               <View style={{ marginTop: 10 }}>
+               {/* <View style={{ marginTop: 10 }}>
                <Category />
                  
                <ScrollView>
                <Card navigation={this.props.navigation} />
                </ScrollView>
 
-               </View>
+               </View> */}
             </View>
          </ImageBackground>
 
@@ -125,7 +126,14 @@ class Category extends Component
 export default Video;
 
 const styles = StyleSheet.create({
-
+   header: {
+      color: '#ffffff',
+      fontSize: height / 25,
+   
+      paddingTop: height / 20,
+      paddingLeft: width / 25,
+      fontWeight: 'bold',
+    },
    Container:
    {
 

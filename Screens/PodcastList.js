@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import {View, StyleSheet, Dimensions, FlatList,ActivityIndicator} from 'react-native';
 import { Text,ListItem, Avatar,Image} from 'react-native-elements';
-
+import moment from 'moment';
 const {width, height} = Dimensions.get('window');
-
+import Song from '../models/Song';
 
 //component for find the list of podcast
 
@@ -44,6 +44,7 @@ class Podcast_list extends Component
   
   componentDidMount()
   {
+
     fetch(global.api_key+'podcasts/'+this.props.podcat_id)
     .then((response) => response.json())
     .then((json) => {
@@ -68,15 +69,28 @@ class Podcast_list extends Component
       )
     }
     else{
+      const pod_data = [];
       let podcasts = list.map((pd,id) => {
+        pod_data.push(new Song(
+          pd.id,
+          '2',
+          pd.podcast_name,
+          pd.short_description,
+          'https://res.cloudinary.com/dht1rd0lr/image/upload/v1600079503/soorma_fxyjnr.jpg',
+          pd.podcast_link,
+        )
+       );
+
         return(
-          <ListItem  onPress={()=>this.props.navigation.navigate('SongsPlay')} >
+          <ListItem  onPress={()=>this.props.navigation.navigate('SongsPlay',{
+            itemId: pd.id,son_data:pod_data})}
+             >
           <Avatar  source={{uri: global.uri+pd.podcast_pic}} />
 
             <ListItem.Content> 
               <ListItem.Title >{pd.podcast_name}</ListItem.Title>
               <View style={styles.subtitleView}>
-                <Text >5 months ago33</Text>
+                <Text >{moment(pd.updated_at).fromNow()}</Text>
               </View>
             </ListItem.Content>
             <ListItem.Chevron />
@@ -86,7 +100,7 @@ class Podcast_list extends Component
      
       return (
         <View>
-          <Text h4 style={{marginTop:10,marginBottom:10,color:'#eee'}}>Latest Podcast</Text>
+          <Text h4 style={{marginTop:10,marginBottom:10,color:'#222'}}> Podcast List</Text>
           {podcasts }
           </View>
       );
