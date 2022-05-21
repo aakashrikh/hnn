@@ -13,9 +13,11 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import { Input } from 'react-native-elements';
 import Toast from 'react-native-simple-toast';
+import {AuthContext} from '../AuthContextProvider';
 
 class SignIn extends Component
 {
+    static contextType = AuthContext;
     constructor(props)
     {
         super(props);
@@ -126,6 +128,11 @@ class SignIn extends Component
                 </LinearGradient>
             </TouchableOpacity>
              }
+
+            <TouchableOpacity style={{justifyContent:"center",marginRight:25,marginTop:30}}
+            onPress={()=>this.context.login("done")}>
+                 <Text style={{color:"#fff",fontWeight:"bold",fontSize:16,textDecorationLine:"underline"}}>Skip for now</Text>
+             </TouchableOpacity>    
             </View>
         </Animatable.View>
       </View>

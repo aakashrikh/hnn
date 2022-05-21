@@ -249,6 +249,35 @@ class App extends Component {
                   <>
                     <Stack.Screen options={{headerShown: false}}name="SignIn" component={SignIn} />
                     <Stack.Screen options={{headerShown: false}} name="Otp" component={Otp}/>
+
+                    {/* <Stack.Screen options={{headerShown: false}} name="Home" component={Home} /> */}
+
+                        {/* <Stack.Screen name="Drawer" component={DrawerNav} options={{headerShown: false}}/> */}
+
+                        <Stack.Screen name="Home" component={TabNav} options={{headerShown: false}}/>
+
+                        <Stack.Screen name="Profile" component={Profile} />
+
+                        <Stack.Screen name="EditProfile" component={EditProfile} />
+
+                        {/* <Stack.Screen name="About Us"  component={Home} />
+
+                        <Stack.Screen name="PrivacyPolicy"  component={Home} />
+
+                        <Stack.Screen name="LoginView"  component={Home} /> */}
+
+                        <Stack.Screen name="SongsList" component={SongsListScreen} />
+
+                        <Stack.Screen name="SongsPlay" component={SongsPlayScreen} options={{headerShown: false}}/>
+                        
+                        <Stack.Screen name="PodcastList" component={PodcastList} />
+
+                        <Stack.Screen name="NewsContent" component={NewsContent} />
+
+                        <Stack.Screen name="VideoContent" component={VideoContent} />
+                        <Stack.Screen name="Comments" component={Comments} options={{headerShown: false}}/>
+
+                        
                   </>
                 )
                   :

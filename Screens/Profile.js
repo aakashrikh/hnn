@@ -85,7 +85,34 @@ class Profile extends Component {
     }
     render() {
         return (
-            <ImageBackground style={styles.Container}>
+           <>
+               {global.token == null ?
+                <ImageBackground style={styles.Container}>
+                
+                
+
+                        <View style={{marginTop:300,padding:20}}>
+                <Button 
+                    onPress={()=>{this.props.navigation.navigate("Signn")}}
+                    icon={ <Icon
+                        name="log-out-outline"
+                        size={15}
+                        color="white"
+                        type="ionicon"
+                        />
+                        }
+                    iconLeft
+                    title="Login" buttonStyle={{backgroundColor:'#ff5b23'}}
+                    />
+ </View>
+              
+
+
+
+
+            </ImageBackground>
+                :
+                <ImageBackground style={styles.Container}>
                 <View style={{ flexDirection: "row" }}>
                     <View style={{ flex: 1 }}>
                         <Image source={require('../img/bas1.jpg')}
@@ -140,9 +167,10 @@ class Profile extends Component {
                 <Button 
                     onPress={()=>{this.context.logout()}}
                     icon={ <Icon
-                        name="logout"
+                        name="log-out-outline"
                         size={15}
                         color="white"
+                        type="ionicon"
                         />
                         }
                     iconLeft
@@ -156,7 +184,8 @@ class Profile extends Component {
 
 
             </ImageBackground>
-
+}
+           </>
         )
     }
 }
@@ -176,15 +205,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         height: 35,
         marginTop: 30,
-
         position: 'absolute',
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center',
         width: 370,
         marginLeft: 55,
-
-
         borderWidth: 1,
         borderColor: 'gray',
 
