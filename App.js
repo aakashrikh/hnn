@@ -35,6 +35,7 @@ import CreatePost from './Screens/CreatePost';
 import Splash from './Screens/Splash';
 import {AuthContext} from './AuthContextProvider';
 import Comments from './Screens/Comments';
+import VideoLandscape from './Screens/VideoLandscape';
 
 //Navigators
 const Tab = createBottomTabNavigator();
@@ -96,7 +97,7 @@ class TabNav extends Component
 
       >
         <Tab.Screen name="Home" component={StackNav} />
-        <Tab.Screen name="Podcast" component={Podcast} />
+        {/* <Tab.Screen name="Podcast" component={Podcast} /> */}
         <Tab.Screen name="Video" component={CreatePost} />
         <Tab.Screen name="LiveTv" component={Videos} />
         
@@ -230,7 +231,6 @@ class App extends Component {
 
       AsyncStorage.setItem('@auth_login', '');
       global.token=null;
-      
     }
 
 
@@ -289,6 +289,7 @@ class App extends Component {
                       :
                       // User is signed in  
                       <>
+                      
                         {/* <Stack.Screen options={{headerShown: false}} name="Home" component={Home} /> */}
 
                         {/* <Stack.Screen name="Drawer" component={DrawerNav} options={{headerShown: false}}/> */}
@@ -314,7 +315,14 @@ class App extends Component {
                         <Stack.Screen name="NewsContent" component={NewsContent} />
 
                         <Stack.Screen name="VideoContent" component={VideoContent} />
+
                         <Stack.Screen name="Comments" component={Comments} options={{headerShown: false}}/>
+
+                        <Stack.Screen name="VideoLandscape" component={VideoLandscape} options={{headerShown: false,
+                        orientation:"landscape"
+                        }}/>
+
+
                         
                       </>
                   )

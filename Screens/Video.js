@@ -2,11 +2,12 @@ import React from 'react'
 import { Component } from 'react';
 
 import { View,Dimensions, Text, StyleSheet, Image, ImageBackground, TouchableOpacity, Button, ScrollView,ActivityIndicator } from 'react-native'
-
+import Orientation from 'react-native-orientation';
 import Card from '../Components/videocomp/Card';
 import {LivePlayer} from "react-native-dbb-rtmp";
 
-const {width, height} = Dimensions.get('window');class Video extends Component {
+const {width, height} = Dimensions.get('window');
+class Video extends Component {
 
    constructor(props) {
       super(props)
@@ -14,6 +15,8 @@ const {width, height} = Dimensions.get('window');class Video extends Component {
          activeIndex: 0
       }
    }
+
+
 
    render() {
       return (
@@ -29,12 +32,12 @@ const {width, height} = Dimensions.get('window');class Video extends Component {
                   this.player = ref
                 }}
 
-               style={{ height: 250, width: '100%',marginTop:20 }}
+               style={{ height:350, width: Dimensions.get("window").width,marginTop:20 }}
                paused={false}
-               muted={false}
+               muted={true}
                bufferTime={300}
                 maxBufferTime={1000}
-               resizeMode={"contain"}
+               resizeMode={"cover"}
                onLoading={()=>{}}
                onLoad={()=>{}}
                onEnd={()=>{}}
@@ -47,6 +50,12 @@ const {width, height} = Dimensions.get('window');class Video extends Component {
                </ScrollView>
 
                </View> */}
+
+               <TouchableOpacity 
+               onPress={()=>this.props.navigation.navigate("VideoLandscape")}
+               style={{alignSelf:"flex-end",backgroundColor:"#ff5d23",padding:5,marginLeft:15,borderRadius:5}}>
+                  <Text style={{color:"#fff",fontWeight:"bold",fontSize:15}}>View in full screen</Text>
+               </TouchableOpacity>
             </View>
          </ImageBackground>
 
@@ -124,6 +133,7 @@ class Category extends Component
 
 
 export default Video;
+
 
 const styles = StyleSheet.create({
    header: {

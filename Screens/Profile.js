@@ -93,16 +93,16 @@ class Profile extends Component {
 
                         <View style={{marginTop:300,padding:20}}>
                 <Button 
-                    onPress={()=>{this.props.navigation.navigate("Signn")}}
+                    onPress={()=>{this.context.logout()}}
                     icon={ <Icon
-                        name="log-out-outline"
+                        name="log-in-outline"
                         size={15}
                         color="white"
                         type="ionicon"
                         />
                         }
                     iconLeft
-                    title="Login" buttonStyle={{backgroundColor:'#ff5b23'}}
+                    title="Login Now" buttonStyle={{backgroundColor:'#ff5b23'}}
                     />
  </View>
               
