@@ -5,18 +5,79 @@ import { View,Dimensions, Text, StyleSheet, Image, ImageBackground, TouchableOpa
 import Orientation from 'react-native-orientation';
 import Card from '../Components/videocomp/Card';
 import {LivePlayer} from "react-native-dbb-rtmp";
-
+import {VideoPlayer} from 'react-native-video';
 const {width, height} = Dimensions.get('window');
+import {Icon } from 'react-native-elements';
+
 class Video extends Component {
 
    constructor(props) {
       super(props)
       this.state = {
-         activeIndex: 0
+         activeIndex: 0,
+         play:false,
+         mute:false
       }
    }
 
+   componentDidMount()
+   {
+      Orientation.lockToPortrait();
+      this.focusListener=this.props.navigation.addListener('focus',() =>
+      {
+         this.play();
+         this.play();
+         Orientation.lockToPortrait();
+         Orientation.addOrientationListener(this._orientationDidChange);
+      });
+      Orientation.addOrientationListener(this._orientationDidChange);
+   }
+   
+ _orientationDidChange = (orientation) => {
 
+   if (orientation === 'LANDSCAPE') {
+     // do something with landscape layout
+   } else {
+     // do something with portrait layout
+   }
+ }
+
+ componentWillUnmount() {
+   Orientation.getOrientation((err, orientation) => {
+     console.log(`Current Device Orientation: ${orientation}`);
+   });
+
+
+   // Remember to remove listener
+   Orientation.removeOrientationListener(this._orientationDidChange);
+ }
+
+ change_o = ()=>{
+   Orientation.lockToLandscape()
+ }
+play = () =>
+{
+   if(this.state.play)
+   {
+      this.setState({play:false})
+   }
+   else
+   {
+      this.setState({play:true})
+   }
+}
+
+mute = () =>
+{
+   if(this.state.mute)
+   {
+      this.setState({mute:false})
+   }
+   else
+   {
+      this.setState({mute:true})
+   }
+}
 
    render() {
       return (
@@ -26,21 +87,30 @@ class Video extends Component {
           <Text onPress={()=>{this.props.navigation.navigate('hf')}} style={styles.header}>Live Tv <Image style={{width:50,height:30}} source={require('../assets/live.png')}/></Text>
         </View>
                
+        {/* <VideoPlayer
+    video={{ uri: "rtmp://thelegitpro.in/hnnnews/hnnnews" }}
+    videoWidth={1600}
+    videoHeight={900}
+    thumbnail={{ uri: 'https://i.picsum.photos/id/866/1600/900.jpg' }}
+/> */}
+
+
                <LivePlayer 
                source={{uri:"rtmp://thelegitpro.in/hnnnews/hnnnews"}}
                   ref={(ref) => {
                   this.player = ref
                 }}
-
-               style={{ height:350, width: Dimensions.get("window").width,marginTop:20 }}
-               paused={false}
-               muted={true}
+               
+               style={{ height:200, width:'98%',marginTop:100,marginLeft:5 ,}}
+               paused={this.state.play}
+               muted={this.state.mute}
                bufferTime={300}
                 maxBufferTime={1000}
                resizeMode={"cover"}
                onLoading={()=>{}}
                onLoad={()=>{}}
                onEnd={()=>{}}
+               
             />
                {/* <View style={{ marginTop: 10 }}>
                <Category />
@@ -50,84 +120,62 @@ class Video extends Component {
                </ScrollView>
 
                </View> */}
+<View style={{flexDirection:'row',marginTop:100,alignSelf:'center'}}>
 
-               <TouchableOpacity 
-               onPress={()=>this.props.navigation.navigate("VideoLandscape")}
-               style={{alignSelf:"flex-end",backgroundColor:"#ff5d23",padding:5,marginLeft:15,borderRadius:5}}>
-                  <Text style={{color:"#fff",fontWeight:"bold",fontSize:15}}>View in full screen</Text>
+<TouchableOpacity 
+               onPress={()=>{this.mute()}}
+               style={{alignSelf:"flex-end",padding:5,marginLeft:15,marginTop:-15,borderRadius:5}}>
+                  <Text style={{color:"#fff",fontWeight:"bold",fontSize:15}}>
+                    {(!this.state.mute)?
+                        <Icon
+                        name='volume-high-outline'
+                        type='ionicon' 
+                        color='#eeeeee'  size={30}style={{marginRight:15}} /> :
+
+                        <Icon
+                        name='volume-mute-outline'
+                        type='ionicon' 
+                        color='#eeeeee' size={30} style={{marginRight:15}} /> 
+                    }
+                  </Text>
                </TouchableOpacity>
+
+
+<TouchableOpacity 
+               onPress={()=>{this.play()}}
+               style={{alignSelf:"flex-end",padding:5,marginLeft:15,borderRadius:5}}>
+                  <Text style={{color:"#fff",fontWeight:"bold",fontSize:15}}>
+                    {(!this.state.play)?
+                        <Icon
+                        name='pause-circle-outline'
+                        type='ionicon' 
+                        color='#eeeeee'size={40}style={{marginRight:15}} /> :
+
+                        <Icon
+                        name='play-circle-outline'
+                        type='ionicon' 
+                        color='#eeeeee' size={40}style={{marginRight:15}} /> 
+                    }
+                  </Text>
+               </TouchableOpacity>
+               
+            
+               <TouchableOpacity 
+               onPress={()=>{this.props.navigation.navigate('VideoLandscape')}}
+               style={{alignSelf:"flex-end",padding:5,marginLeft:15,marginTop:-15,borderRadius:5}}>
+                 <Icon
+                        name='expand-outline'
+                        type='ionicon' 
+                        color='#eeeeee' size={25} style={{marginRight:15}} /> 
+               </TouchableOpacity>
+
+</View>
+
             </View>
          </ImageBackground>
 
       )
    }
-}
-
-
-class Category extends Component
-{
-  constructor(props) {
-    super(props);
-    // Don't call this.setState() here!
-    this.state = { cat_data:false,data:[],  isLoading: true };
-  }
-
-  componentDidMount()
-  {
-    fetch(global.api_key+'news_cat')
-    .then((response) => response.json())
-    .then((json) => {
-      
-      this.setState({ data: json });
-    })
-    .catch((error) => console.error(error))
-    .finally(() => {
-      this.setState({ isLoading: false });
-    });
-  }
-
-  category_update = () =>
-  {
-    console.warn("hskhs");
-  }
-
-  
-  render()
-  {
-    const { data, isLoading } = this.state;
-    
-    if(isLoading)
-    {
-      return(
-        <View>
-         <ActivityIndicator size="large" color="orange" />
-        </View>
-      )
-    }
-    else{
-      let news_cat = data.map((news,id) => {
-        return(
-          <TouchableOpacity onPress={()=>{this.category_update}} style={styles.border1}>
-          <Text style={{ color: 'white', fontSize: 15, alignSelf: "center", marginTop: 6 }}>{news.n_c_categories}</Text>
-        </TouchableOpacity >
-        )
-      })
-     
-      return (
-        <View>
-          <ScrollView
-        horizontal={true} 
-      >
-        <TouchableOpacity onPress={()=>{this.category_update}} style={styles.border1}>
-          <Text style={{ color: 'white', fontSize: 15, alignSelf: "center", marginTop: 6 }}>All</Text>
-        </TouchableOpacity>
-          {news_cat}
-            </ScrollView>
-            </View>
-      );
-      }
-
-  }
 }
 
 

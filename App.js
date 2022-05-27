@@ -318,8 +318,7 @@ class App extends Component {
 
                         <Stack.Screen name="Comments" component={Comments} options={{headerShown: false}}/>
 
-                        <Stack.Screen name="VideoLandscape" component={VideoLandscape} options={{headerShown: false,
-                        orientation:"landscape"
+                        <Stack.Screen name="VideoLandscape" component={VideoLandscape} options={{headerShown: false
                         }}/>
 
 
