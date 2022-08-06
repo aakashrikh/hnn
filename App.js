@@ -91,8 +91,11 @@ class TabNav extends Component
       })}
       tabBarOptions={{
         activeTintColor: '#ff5d23',
-        inactiveTintColor: '#000000',
-        showLabel:true
+        inactiveTintColor: '#fff',
+        showLabel:true,
+        style: {
+          backgroundColor: '#000',//color you want to change
+        }
       }}
 
       >
@@ -258,7 +261,7 @@ class App extends Component {
 
                         <Stack.Screen name="Profile" component={Profile} />
 
-                        <Stack.Screen name="EditProfile" component={EditProfile} />
+                        <Stack.Screen name="EditProfile" component={EditProfile} options={{headerShown: false}}/>
 
                         {/* <Stack.Screen name="About Us"  component={Home} />
 
@@ -298,7 +301,7 @@ class App extends Component {
 
                         <Stack.Screen name="Profile" component={Profile} />
 
-                        <Stack.Screen name="EditProfile" component={EditProfile} />
+                        <Stack.Screen name="EditProfile" component={EditProfile} options={{headerShown: false}} />
 
                         {/* <Stack.Screen name="About Us"  component={Home} />
 
@@ -317,6 +320,7 @@ class App extends Component {
                         <Stack.Screen name="VideoContent" component={VideoContent} />
 
                         <Stack.Screen name="Comments" component={Comments} options={{headerShown: false}}/>
+
 
                         <Stack.Screen name="VideoLandscape" component={VideoLandscape} options={{headerShown: false
                         }}/>

@@ -33,11 +33,9 @@ class Home extends Component
   renderLeftComponent()
   {
     return(
-      <Image 
-      onPress={()=>{this.props.navigation.navigate("Profile")}}
-                  style={{width:30,height:30,marginTop:5}} 
-                  source= {require('../assets/user.png')}
-                />
+      <TouchableOpacity onPress={()=>this.drawer()}>
+        <Icon name="menu" color="#fff" size={25}/>
+      </TouchableOpacity>
     )
   }
 
@@ -45,20 +43,17 @@ class Home extends Component
   {
     return(
       <Image 
-                  style={{width:50,height:50}} 
-                  source= {require('../assets/logo.png')}
+                  style={{width:80,height:30}} 
+                  source= {require('../img/logo.png')}
                 />
     )
   }
 
-  renderRightComponent()
-  {
+  renderRightComponent(){
     return(
-      <></>
-      // <Icon
-      //         name='notifications-outline'
-      //         type='ionicon' 
-      //         color='black' style={{marginTop:5}} /> 
+      <TouchableOpacity>
+        <Icon name="search" color="#fff" size={25}/>
+      </TouchableOpacity>
     )
   }
 
@@ -175,12 +170,12 @@ class Home extends Component
                   <View style={{ flexDirection:'row',width:35 }}>
                 <Image 
                   style={{width:30,height:30}} 
-                  source= {{uri: 'https://healthyrabbit.in/hnn/public/assets/images/fev.jpg'}}
+                  source= {require('../assets/logo.png')}
                 />
                 </View>
               <View style={{flexDirection:'column',width:'80%'}}>
-              <Text h5 style={{marginLeft:10,fontWeight:'500'}}> HNN 24*7 </Text>
-              <Text style={{marginLeft:10}}>{moment(item.modified_gmt).fromNow()}</Text>
+              <Text h5 style={{marginLeft:10,fontWeight:'500',color:"#fff"}}> HNN 24*7 </Text>
+              <Text style={{marginLeft:10,color:"#fff"}}>{moment(item.modified_gmt).fromNow()}</Text>
               </View>
 
               <View style={{alignSelf:'flex-end'}}>
@@ -188,17 +183,21 @@ class Home extends Component
               <Icon
               name='share-social-outline'
               type='ionicon' 
-              color='gray' style={{marginRight:15}} /> 
+              color='#fff' style={{marginRight:15}} /> 
             </Pressable>
               </View>
               </View>
               <TouchableOpacity  onPress={()=>{this.props.navigation.navigate('NewsContent',{
                   item: item })}}>
-                <Text h4 style={{marginTop:10,fontSize:16}}>{item.title.rendered}</Text>
-<HTMLView
+                <Text style={{marginTop:10,fontSize:20,fontWeight:"bold",color:"#fff"}}>{item.title.rendered}</Text>
+{/* <HTMLView
         value={item.excerpt.rendered}
         stylesheet={styles}
-      />
+      /> */}
+
+      <Text style={{color:"#fff",marginTop:10,textAlign:"justify"}}>
+      {item.excerpt.rendered}
+      </Text>
   
               </TouchableOpacity>
             
@@ -249,7 +248,7 @@ class Home extends Component
     {
       // this.props.navigation.openDrawer();
         return(
-          <View style={{flex:1}}>
+          <View style={{flex:1,backgroundColor:"#0D0C0A"}}>
             
             <Header
               statusBarProps={{ barStyle: 'light-content' }}
@@ -258,7 +257,7 @@ class Home extends Component
               rightComponent={this.renderRightComponent()}
               ViewComponent={LinearGradient} // Don't forget this!
               linearGradientProps={{
-                colors: ['white', 'white'],
+                colors: ['black', 'black'],
                 start: { x: 0, y: 0.5 },
                 end: { x: 1, y: 0.5 },
                 
@@ -343,7 +342,7 @@ class Category extends Component
           {
             return(
               <TouchableOpacity  onPress={()=>{this.props.cat_act(news.id)}} style={styles.border1}>
-              <Text style={{ color: '#eee', fontSize: 14, alignSelf: "center", }}>{news.name}</Text>
+              <Text style={{ color: '#000', fontSize: 14, alignSelf: "center", }}>{news.name}</Text>
             </TouchableOpacity >
             )
           }
@@ -351,7 +350,7 @@ class Category extends Component
           {
             return(
               <TouchableOpacity onPress={()=>{this.props.cat_act(news.id)}} style={styles.border2}>
-              <Text style={{ color: '#5d5d5d', fontSize: 14, alignSelf: "center", }}>{news.name}</Text>
+              <Text style={{ color: '#fff', fontSize: 14, alignSelf: "center", }}>{news.name}</Text>
             </TouchableOpacity >
             )
           }
@@ -362,11 +361,11 @@ class Category extends Component
         <View>
           <ScrollView
           showsHorizontalScrollIndicator={false}
-          horizontal={true} style={{backgroundColor:'#ffffff'}}
+          horizontal={true} style={{backgroundColor:'#000'}}
       >
         {(this.props.active_cat==0)?
         <TouchableOpacity onPress={()=>{this.props.cat_act(0)}} style={styles.border1}>
-        <Text style={{ color: '#eee', fontSize: 14, alignSelf: "center", }}>All</Text>
+        <Text style={{ color: '#000', fontSize: 14, alignSelf: "center", }}>All</Text>
       </TouchableOpacity>
       :
       <TouchableOpacity onPress={()=>{this.props.cat_act(0)}} style={styles.border2}>
@@ -414,13 +413,13 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 10,
     marginTop: 10,
-    backgroundColor:'black'
+    backgroundColor:'#FF900C'
 
   },
   border2: {
     color: "#5d5d5d",
     borderWidth: 1,
-    borderColor: "#5d5d5d",
+    borderColor: "#fff",
     paddingLeft:15,
     paddingRight:15,
     paddingTop:5,
@@ -434,8 +433,9 @@ const styles = StyleSheet.create({
   },
   card: {
     marginTop: 10,
-    backgroundColor:'#ffffff',
-    padding:10
+    backgroundColor:'#000',
+    padding:10,
+    borderRadius:10
   },
 
   FeedImage: {
@@ -454,6 +454,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     padding: 10
+  },
+  p:{
+    color:"#fff"
   }
 
 });

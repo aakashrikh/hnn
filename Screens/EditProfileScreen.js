@@ -1,8 +1,9 @@
 import React, { Component, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground,ActivityIndicator , TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground,ActivityIndicator , TextInput, Button, SafeAreaView, Dimensions, ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-simple-toast';
+
 
 class  EditProfileScreen extends Component {
 
@@ -121,19 +122,36 @@ class  EditProfileScreen extends Component {
     render()
     {
     return (
-        <View style={{backgroundColor:'white',flex:1,paddingTop:30,paddingLeft:10,paddingRight:10}}>
-            <Text  style={{color:'#222',marginBottom:'5%'}}>Enter your Full name</Text>
+        <View style={{backgroundColor:'#000',flex:1,}}>
+            <SafeAreaView style={{backgroundColor:'#000',flex:1,}}>
+
+                {/* custom header */}
+            <View style={[styles.header, { flexDirection: "row", justifyContent: "space-between" }]}>
+               <View style={{ flexDirection: "row", left: 5, justifyContent: "center" }}>
+                  <TouchableOpacity style={{ marginTop: 6 }} onPress={() => this.props.navigation.goBack()}>
+                      <Icon name="chevron-back-outline" color="#fff" size={25} type="ionicon" />
+                  </TouchableOpacity>
+                  <View style={{ justifyContent: "center" }}>
+                      <Text style={styles.headerText}>Edit Profile</Text>
+                  </View>
+              </View>
+            </View>
+
+
+            <ScrollView>
+                
+            <Text  style={{color:'#fff',fontWeight:"bold",marginBottom:'5%',marginTop:20,marginLeft:20}}>Enter your Full name</Text>
               <View style={styles.action}>
-                  <Ionicons 
+                  <Icon 
                       name="person-outline"
-                      color='#222eee'
+                      color='#fff'
                       size={20}
                   />
                   <TextInput 
                       placeholder="Your Full name"
-                      placeholderTextColor="#666666"
+                      placeholderTextColor="#FF900C"
                       style={[styles.textInput, {
-                          color: '#222eee'
+                          color: '#FF900C'
                       }]}
                       autoCapitalize="none"
                      value={this.state.name}
@@ -141,20 +159,21 @@ class  EditProfileScreen extends Component {
                      onChangeText={(text) => {this.setState({name:text})}}
                   />
              </View>
-              <Text style={{color:'#222',marginTop:'10%',marginBottom:'5%'}}>Enter your Email</Text>
+              <Text style={{color:'#fff',fontWeight:"bold",marginTop:'10%',marginBottom:'5%',marginLeft:20}}>Enter your Email</Text>
               <View style={styles.action}>
                   
-                  <Ionicons 
+                  <Icon 
                       name="mail-outline"
-                      color='#222eee'
+                      color='#fff'
                       size={20}
                   />
                   <TextInput 
                       placeholder="Your Email"
-                      placeholderTextColor="#666666"
+                      placeholderTextColor="#FF900C"
                       style={[styles.textInput, {
-                          color: '#222eee'
+                          color: '#FF900C'
                       }]}
+                    
                       autoCapitalize="none"
                       value={this.state.email}
                       onChangeText={(text) => {this.setState({email:text})}}
@@ -164,19 +183,19 @@ class  EditProfileScreen extends Component {
                 
               </View>
 
-              <Text style={{color:'#222',marginTop:'10%',marginBottom:'5%'}}>Enter your Contact</Text>
+              <Text style={{color:'#fff',fontWeight:"bold",marginTop:'10%',marginBottom:'5%',marginLeft:20}}>Enter your Contact</Text>
               <View style={styles.action}>
                   
-                  <Ionicons 
-                      name="mail-outline"
-                      color='#222eee'
+                  <Icon 
+                      name="call-outline"
+                      color='#fff'
                       size={20}
                   />
                   <TextInput 
                       placeholder="Your Contact"
-                      placeholderTextColor="#666666"
+                      placeholderTextColor="#FF900C"
                       style={[styles.textInput, {
-                          color: '#222eee'
+                          color: '#FF900C'
                       }]}
                       autoCapitalize="none"
                       value={this.state.contact}
@@ -186,19 +205,19 @@ class  EditProfileScreen extends Component {
                 
               </View>
 
-              <Text style={{color:'#222',marginTop:'10%',marginBottom:'5%'}}>About You</Text>
+              <Text style={{color:'#fff',fontWeight:"bold",marginTop:'10%',marginBottom:'5%',marginLeft:20}}>About You</Text>
               <View style={styles.action}>
                   
-                  <Ionicons 
+                  <Icon 
                       name="person-outline"
-                      color='#222eee'
+                      color='#fff'
                       size={20}
                   />
                   <TextInput 
                       placeholder="Describe Yourself"
-                      placeholderTextColor="#666666"
+                      placeholderTextColor="#FF900C"
                       style={[styles.textInput, {
-                          color: '#222eee'
+                          color: '#FF900C'
                       }]}
                       autoCapitalize="none"
                       value={this.state.about}
@@ -216,7 +235,7 @@ class  EditProfileScreen extends Component {
                     onPress={()=>this.detailsUpdate()}
                 >
                 <LinearGradient
-                    colors={['#ff5b23', '#ff5b23']}
+                    colors={['#FF900C', '#FF481F']}
                     style={styles.signIn}
                 >
                     <Text style={[styles.textSign, {
@@ -232,6 +251,10 @@ class  EditProfileScreen extends Component {
             style={{top:35}}/>
         </View>
     }
+            </ScrollView>
+            </SafeAreaView>
+
+            
         </View>
     );
                 }
@@ -271,7 +294,9 @@ const styles = StyleSheet.create({
         marginTop: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#f2f2f2',
-        paddingBottom: 5
+        paddingBottom: 5,
+        width:Dimensions.get('window').width/1.1,
+        marginLeft:20
     },
     actionError: {
         flexDirection: 'row',
@@ -281,7 +306,7 @@ const styles = StyleSheet.create({
         paddingBottom: 5
     },
     textInput: {
-        flex: 1,
+        width:Dimensions.get('window').width/1.5,
         marginTop: Platform.OS === 'ios' ? 0 : -12,
         paddingLeft: 10,
         color: '#05375a',
@@ -295,15 +320,31 @@ const styles = StyleSheet.create({
         marginTop: 50
     },
     signIn: {
-        width: '100%',
-        height: 50,
+        width: '80%',
+        height: 40,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10
+        borderRadius: 5
     },
     textSign: {
         fontSize: 18,
         fontWeight: 'bold'
-    }
+    },
+    header: {
+        backgroundColor: "#000",
+        flexDirection: "row",
+        padding: 10,
+        borderBottomLeftRadius: 5,
+        borderBottomRightRadius: 5,
+        marginTop:25
+      },
+      headerText:{
+        color:"#fff",
+        alignSelf:"center",
+        fontSize:18,
+        left:10,
+        fontWeight:"bold",
+        marginTop:Platform.OS == "ios" ? 7 : 3,
+      }
   });
 export default EditProfileScreen;

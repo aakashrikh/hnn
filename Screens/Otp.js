@@ -14,6 +14,7 @@ import { Text } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
 import {AuthContext} from '../AuthContextProvider';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 class Otp extends Component
 {
   static contextType = AuthContext;
@@ -153,32 +154,44 @@ class Otp extends Component
       // ()=>this.props.navigation.navigate('FirstUserProfile')
         return(
           <View style={styles.container}>
-          
+            
+            {/* custom header */}
+               <View style={{  }}>
+                  <TouchableOpacity style={{ marginTop:30,marginLeft:20 }} onPress={() => this.props.navigation.goBack()}>
+                      <MaterialIcons name="arrow-back" color="#fff" size={25} />
+                  </TouchableOpacity>
+            </View>
+
+
+            <View style={{alignItems: 'center',}}>
             <Text style={styles.instructions} h4>OTP Verification</Text>
 
-                  <Text>Enter your OTP code here</Text>
-                  <OTPTextView
-                    ref={(e) => (this.input1 = e)}
-                    containerStyle={styles.textInputContainer}
-                    handleTextChange={(text) => this.setState({otpInput: text})}
-                    inputCount={4}
-                    keyboardType="numeric"
-                  />
+                <Text style={{fontSize:14,fontWeight:"bold",color:"#fff"}}>Enter your OTP code here</Text>
+                <OTPTextView
+                  ref={(e) => (this.input1 = e)}
+                  containerStyle={styles.textInputContainer}
+                  handleTextChange={(text) => this.setState({otpInput: text})}
+                  inputCount={4}
+                  keyboardType="numeric"
+                  tintColor="#FF481F"
+                  offTintColor="#fff"
+                />
 
-                  {this.state.isLoading?
-                  <ActivityIndicator size="small" color="#222222" />
-                  :
-                  <TouchableOpacity  onPress={()=>this.otp_verify()} style={{width:'80%',marginTop:30}}>
-                  <LinearGradient 
-                          colors={['#ff5b23', '#ff5b23']}
-                          style={styles.signIn}
-                      >
-                          <Text style={[styles.textSign, {
-                              color:'#fff'
-                          }]}>OTP Verification</Text>
-                      </LinearGradient>
-                      </TouchableOpacity>
-                  }
+                {this.state.isLoading?
+                <ActivityIndicator size="large" color="#FF900C" />
+                :
+                <TouchableOpacity  onPress={()=>this.otp_verify()} style={{width:'80%',marginTop:30}}>
+                <LinearGradient 
+                        colors={['#FF900C', '#FF481F']}
+                        style={styles.signIn}
+                    >
+                        <Text style={[styles.textSign, {
+                            color:'#fff'
+                        }]}>OTP Verification</Text>
+                    </LinearGradient>
+                    </TouchableOpacity>
+                }
+            </View>
           </View>
           )
     }
@@ -196,8 +209,8 @@ const styles = StyleSheet.create({
 },
     container: {
       flex:1,
-      alignItems: 'center',
-      backgroundColor: '#F5FCFF',
+      // alignItems: 'center',
+      backgroundColor: '#000',
       padding: 5,
     },
     welcome: {
@@ -209,12 +222,13 @@ const styles = StyleSheet.create({
       fontSize: 22,
       fontWeight: '500',
       textAlign: 'left',
-      color: '#333333',
+      color: '#fff',
       marginBottom: 20,
       marginTop:20
     },
     textInputContainer: {
       marginBottom: 20,
+      color:"#fff"
     },
     roundedTextInput: {
       borderRadius: 10,
@@ -229,7 +243,7 @@ const styles = StyleSheet.create({
     textInput: {
       height: 40,
       width: '80%',
-      borderColor: '#000',
+      borderColor: '#fff',
       borderWidth: 1,
       padding: 10,
       fontSize: 16,

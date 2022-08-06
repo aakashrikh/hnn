@@ -6,7 +6,7 @@ import {
     Dimensions,
     StyleSheet,
     StatusBar,
-    Image,ActivityIndicator
+    Image,ActivityIndicator, ScrollView
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -77,15 +77,62 @@ class SignIn extends Component
         return(
           <View style={styles.container}>
           <StatusBar backgroundColor='#009387' barStyle="light-content"/>
-        <View style={styles.header}>
-            <Animatable.Image 
-                animation="bounceIn"
-                duraton="1500"
-            source={require('../img/logosmall.png')}
-            style={styles.logo}
-            />
-        </View>
-        <Animatable.View 
+            <ScrollView>
+                    <TouchableOpacity style={{justifyContent:"center",alignSelf:"flex-end",
+                        marginRight:20,marginTop:20,borderRadius:5,borderWidth:1,borderColor:"#FF900C",padding:5,width:60,}}
+                        onPress={()=>this.context.login("done")}>
+                        <Text style={{color:"#FF900C",fontWeight:"700",fontSize:12,alignSelf:"center"}}>Skip</Text>
+                    </TouchableOpacity>  
+                <View style={styles.header}>
+                    <Animatable.Image 
+                        animation="bounceIn"
+                        duraton="1500"
+                    source={require('../img/logo.png')}
+                    style={styles.logo}
+                    />
+                </View>
+
+        
+                <View style={{marginTop:80}}>
+                    <Text style={[styles.title, {
+                        color: '#eeeeee'
+                    }]}>Stay connected with everyone!</Text>
+                    <Input
+                        placeholder='Enter your mobile number'
+                        onChangeText={(e) => {this.setState({contact_no:e})}}  
+                        placeholderTextColor="#E64939"  
+                        keyboardType='number-pad'
+                        maxLength={10}
+                        leftIcon={
+                            <MaterialIcons
+                            name='phone'
+                            size={24}
+                            color='#E64939'
+                            />
+                        }
+                        inputContainerStyle={styles.input}
+                        inputStyle={{color:"#E64939"}}
+                    />
+
+                    {this.state.isLoading ?
+                    <ActivityIndicator size="large" color="#FF900C" />
+                    :
+                    <TouchableOpacity onPress={this.mobile_verify}>
+                        <LinearGradient
+                            colors={['#FF900C', '#FF481F']}
+                            style={styles.signIn}
+                        >
+                            <Text style={styles.textSign}>Get Started</Text>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                    }
+
+
+                      
+                </View>
+            </ScrollView>
+
+        {/* <Animatable.View 
             style={[styles.footer, {
                 backgroundColor: '#ff5b23'
             }]}
@@ -134,7 +181,7 @@ class SignIn extends Component
                  <Text style={{color:"#fff",fontWeight:"bold",fontSize:16,textDecorationLine:"underline"}}>Skip for now</Text>
              </TouchableOpacity>    
             </View>
-        </Animatable.View>
+        </Animatable.View> */}
       </View>
           )
     }
@@ -151,9 +198,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000'
   },
   header: {
-      flex: 2,
+    //   flex: 2,
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      marginTop:150
   },
   footer: {
       flex: 1,
@@ -164,13 +212,14 @@ const styles = StyleSheet.create({
       paddingHorizontal: 30
   },
   logo: {
-      width:130,
-      height:100
+      width:160,
+      height:60
   },
   title: {
       color: '#05375a',
-      fontSize: 25,
-      fontWeight: 'bold'
+      fontSize: 18,
+      fontWeight: '700',
+      alignSelf:"center"
   },
   text: {
       color: 'grey',
@@ -181,15 +230,29 @@ const styles = StyleSheet.create({
       marginTop: 30
   },
   signIn: {
-      width: 150,
-      height: 40,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 50,
-      flexDirection: 'row'
+        width: Dimensions.get('window').width/1.5,
+        height: 45,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        flexDirection: 'row',
+        alignSelf:"center",
+        marginTop:30
   },
   textSign: {
-      color: 'white',
-      fontWeight: 'bold'
-  }
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize:16
+  },
+  input: { 
+        alignSelf:"center",
+        borderWidth:1,
+        borderColor:'#E64939',
+        borderRadius:10,
+        paddingLeft:25,
+        color: "#E64939", 
+        fontSize: 15,
+        width:Dimensions.get('window').width/1.15,
+        marginTop:20
+    }
 });
