@@ -33,7 +33,7 @@ class Home extends Component
   renderLeftComponent()
   {
     return(
-      <TouchableOpacity onPress={()=>this.drawer()}>
+      <TouchableOpacity onPress={()=>this.props.navigation.openDrawer()}>
         <Icon name="menu" color="#fff" size={25}/>
       </TouchableOpacity>
     )

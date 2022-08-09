@@ -8,7 +8,10 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {   createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -135,35 +138,18 @@ class StackNav extends Component
 }
 
 
-// class StackNav_logout extends Component
-// {
-//   render()
-//   {
-//     return (
-//         <Stack.Navigator>
-//           <Stack.Screen options={{headerShown: false}}name="SignIn" component={SignIn} />
-//           <Stack.Screen options={{headerShown: false}} name="Otp" component={Otp}/>
-//           <Stack.Screen options={{headerShown: false}}name="FirstUserProfile" component={FirstUserProfile} />
-//         </Stack.Navigator>
-//       )
-//   }
-// }
-
 class DrawerNav extends Component{
   render(){
     return (
       <SafeAreaView style={styles.safeArea}>
-      <Drawer.Navigator screenOptions={{headerShown:false}} initialRouteName="Home" drawerContent={props=> <DrawerContent {...props} />} >
+        
+      <Drawer.Navigator screenOptions={{headerShown:false}} initialRouteName="Home"  useLegacyImplementation
+      >
       <Drawer.Screen options={{headerShown:false,
               drawerIcon: config => <Icon
                   size={23}
                   name={Platform.OS === 'android' ? 'home' : 'home'}></Icon>
           }}  name="Home" component={TabNav} />
-          {/* <Drawer.Screen options={{headerShown:false,
-              drawerIcon: config => <Icon
-                  size={23}
-                  name={Platform.OS === 'android' ? 'home' : 'home'}></Icon>
-          }}  name="Home" component={TabNavi} />
   
           <Drawer.Screen options={{
               drawerIcon: config => <Icon
@@ -181,7 +167,7 @@ class DrawerNav extends Component{
               drawerIcon: config => <Icon
                   size={23}
                   name={Platform.OS === 'android' ? 'share' : 'share'}></Icon>
-          }}  name="Invite Friends" component={Home} /> */}
+          }}  name="Invite Friends" component={Home} />
   
         </Drawer.Navigator>
         </SafeAreaView>
@@ -257,7 +243,7 @@ class App extends Component {
 
                         {/* <Stack.Screen name="Drawer" component={DrawerNav} options={{headerShown: false}}/> */}
 
-                        <Stack.Screen name="Home" component={TabNav} options={{headerShown: false}}/>
+                        <Stack.Screen name="Home" component={DrawerNav} options={{headerShown: false}}/>
 
                         <Stack.Screen name="Profile" component={Profile} />
 
@@ -297,7 +283,7 @@ class App extends Component {
 
                         {/* <Stack.Screen name="Drawer" component={DrawerNav} options={{headerShown: false}}/> */}
 
-                        <Stack.Screen name="Home" component={TabNav} options={{headerShown: false}}/>
+                        <Stack.Screen name="Home" component={DrawerNav} options={{headerShown: false}}/>
 
                         <Stack.Screen name="Profile" component={Profile} />
 
