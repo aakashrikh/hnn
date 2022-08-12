@@ -4,7 +4,7 @@ import {
   StyleSheet,
   Text,
   useColorScheme,
-  View
+  View,Image, ActivityIndicator,Linking
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
@@ -16,7 +16,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createStackNavigator} from '@react-navigation/stack';
-import { DrawerContent } from './Screens/DrawerContent';
+// import { DrawerContent } from './Screens/DrawerContent';
 
 
 //Screen Imports
@@ -39,7 +39,8 @@ import Splash from './Screens/Splash';
 import {AuthContext} from './AuthContextProvider';
 import Comments from './Screens/Comments';
 import VideoLandscape from './Screens/VideoLandscape';
-
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import linking from './src/linking';
 //Navigators
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -53,6 +54,7 @@ global.uri="https://healthyrabbit.in/hnn/public/";
 global.image_url="https://hnn24x7.com/wp-content/uploads/";
 global.login_data=true;
 
+global.token=null;
 
 //tab navigation
 class TabNav extends Component
@@ -138,12 +140,117 @@ class StackNav extends Component
 }
 
 
+class DrawerContent extends Component 
+{
+  constructor(props) {
+    super(props);
+    // Don't call this.setState() here!
+    this.state = { 
+      cat_data:false,
+      data:[],  
+      isLoading: true,
+      
+    };
+  }
+  componentDidMount ()
+  {
+    fetch('https://hnn24x7.com/wp-json/wp/v2/categories')
+    .then((response) => response.json())
+    .then((json) => {
+      this.setState({ data: json });
+    })
+    .catch((error) => console.error(error))
+    .finally(() => {
+      this.setState({ isLoading: false });
+    });
+  }
+
+
+  render()
+  {
+
+    
+    const { data, isLoading } = this.state;
+    
+    if(isLoading)
+    {
+      return(
+        <View>
+        <ActivityIndicator size="large" color="orange" />
+        </View>
+      )
+    }
+    else{
+      let news_cat = data.map((news,id) => {
+        
+            return(
+              <View style={{padding:10,borderBottomWidth:1,borderBottomColor:'#ececec'}}>
+        <TouchableOpacity   onPress={() => Linking.openURL('hnn://main/'+news.id)} style={styles.border1}>
+              <Text style={{ color: '#000', fontSize: 14, }}>{news.name}</Text>
+            </TouchableOpacity >
+      </View>
+            )
+          
+        
+      })
+      
+    return(
+      <View style={{flex:1}}>
+        <View style={{height:200,backgroundColor:'#ec3005',borderRadiusBottomRight:20}}>
+        {global.token == null ?
+          <View style={{width:'100%'}}>
+              <View style={{width:'100%'}}>
+
+              <Image source={require('./img/bas1.jpg')}
+                            style={{
+                                width: 80, height: 80, borderRadius: 100, marginTop: 50, alignSelf:"center"
+                            }} />
+
+
+              </View>
+
+              <View style={{ marginTop: 5,marginBottom:20 }} >
+              <Text style={{ fontWeight: 'bold', color: 'white', fontSize:18,alignSelf:"center" }}>Welcome HNN 24*7</Text>
+                    </View>
+
+          </View>:
+
+           <View style={{width:'100%'}}>
+              <View style={{width:'100%'}}>
+
+              <Image source={require('./img/bas1.jpg')}
+                            style={{
+                                width: 80, height: 80, borderRadius: 100, marginTop: 50, alignSelf:"center"
+                            }} />
+
+
+              </View>
+
+              <View style={{ marginTop: 5,marginBottom:20 }} >
+                        <Text style={{ fontWeight: 'bold', color: 'white', fontSize:18,alignSelf:"center" }}>Aakash Rikh</Text>
+                        <Text style={{ color: 'white', fontSize: 14,alignSelf:"center" }}>+8006435315</Text>
+                    </View>
+
+          </View>
+      
+    }
+        </View>
+                    <ScrollView>
+        {news_cat}
+    </ScrollView>
+      </View>
+    )
+                          }
+  }
+}
+
+
 class DrawerNav extends Component{
   render(){
     return (
       <SafeAreaView style={styles.safeArea}>
         
-      <Drawer.Navigator screenOptions={{headerShown:false}} initialRouteName="Home"  useLegacyImplementation
+      <Drawer.Navigator screenOptions={{headerShown:false}} initialRouteName="Home"  drawerContent={props => <DrawerContent {...props} />}
       >
       <Drawer.Screen options={{headerShown:false,
               drawerIcon: config => <Icon
@@ -232,7 +339,7 @@ class App extends Component {
       else {
         return (
           <AuthContext.Provider value={{ login: this.login, logout: this.logout }}>
-            <NavigationContainer>
+            <NavigationContainer linking={linking}>
               <Stack.Navigator >
                 {!this.state.islogin ? (
                   <>

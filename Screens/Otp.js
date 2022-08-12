@@ -166,11 +166,12 @@ class Otp extends Component
             <View style={{alignItems: 'center',}}>
             <Text style={styles.instructions} h4>OTP Verification</Text>
 
-                <Text style={{fontSize:14,fontWeight:"bold",color:"#fff"}}>Enter your OTP code here</Text>
+                <Text style={{fontSize:14,fontWeight:"bold",color:"#fff",marginBottom:50}}>Enter your OTP code here</Text>
                 <OTPTextView
                   ref={(e) => (this.input1 = e)}
                   containerStyle={styles.textInputContainer}
                   handleTextChange={(text) => this.setState({otpInput: text})}
+                  textInputStyle={{color:'#fff'}}
                   inputCount={4}
                   keyboardType="numeric"
                   tintColor="#FF481F"

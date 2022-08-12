@@ -59,10 +59,26 @@ class Home extends Component
 
   componentDidMount()
   {
+    //  console.warn(this.props.route);
+   
+    this.focusListener=this.props.navigation.addListener('state',() =>
+        {
+            // console.warn(this.props.route.params.id)
+            if(this.props.route.params != undefined)
+            {
+                this.activate_cat(this.props.route.params.id);
+            }
+        });
     this.fetch_news(0,1);
+    
   }
 
-   fetch_news = (cat,page)=>{
+  componentWillUnmount() {
+    this.focusListener();
+  }
+
+ 
+    fetch_news = (cat,page)=>{
   
     if(cat == 0)
     {
@@ -174,7 +190,7 @@ class Home extends Component
                 />
                 </View>
               <View style={{flexDirection:'column',width:'80%'}}>
-              <Text h5 style={{marginLeft:10,fontWeight:'500',color:"#fff"}}> HNN 24*7 </Text>
+              <Text h5 style={{marginLeft:10,fontWeight:'500',color:"#fff"}}> HNN 24*7  </Text>
               <Text style={{marginLeft:10,color:"#fff"}}>{moment(item.modified_gmt).fromNow()}</Text>
               </View>
 
@@ -342,7 +358,7 @@ class Category extends Component
           {
             return(
               <TouchableOpacity  onPress={()=>{this.props.cat_act(news.id)}} style={styles.border1}>
-              <Text style={{ color: '#000', fontSize: 14, alignSelf: "center", }}>{news.name}</Text>
+              <Text style={{ color: '#fff', fontSize: 14, alignSelf: "center", }}>{news.name}</Text>
             </TouchableOpacity >
             )
           }
@@ -413,7 +429,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 10,
     marginTop: 10,
-    backgroundColor:'#FF900C'
+    backgroundColor:'#ec3005'
 
   },
   border2: {
