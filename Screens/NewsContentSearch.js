@@ -14,12 +14,14 @@ import { WebView } from 'react-native-webview';
 import moment from'moment';
 const ratio = win.width/541; //541 is actual image width
 
-class NewsContent extends Component
+class NewsContentSearch extends Component
 {
   constructor(props) {
     super(props);
+    console.warn(this.props.route.params.item.id)
     // Don't call this.setState() here!
-    this.state = { counter: 0,liked:false,data:[],  isLoading: true};
+    this.state = { counter: 0,liked:false,data:[],  isLoading: true, id:this.props.route.params.item.id, news:"",title:"",description:"",
+    excerpt:"",new_image:""};
   }
 
 hideSpinner() {
@@ -36,6 +38,10 @@ hideSpinner() {
         style={styles.ActivityIndicatorStyle}
       />
     );
+  }
+
+  componentDidMount(){
+    this.fetch_data()
   }
 
   onShare = async (news_title,news_url,news_msg) => {
@@ -61,6 +67,30 @@ hideSpinner() {
     }
   };
 
+  fetch_data=()=>{
+    fetch("https://hnn24x7.com/wp-json/wp/v2/posts/"+this.state.id, { 
+        method: 'GET',
+          headers: {    
+              Accept: 'application/json',  
+                'Content-Type': 'application/json',
+                'Authorization': global.token  
+               }, 
+              }).then((response) => response.json())
+                        .then((json) => {
+                           
+                            this.setState({news:json})
+                             console.warn(json.title.rendered)
+                             this.setState({title:json.title.rendered,description:json.content.rendered,excerpt:json.excerpt.rendered,
+                                new_image:json.yoast_head_json.twitter_image})
+                             
+                           return json;    
+                       }).catch((error) => {  
+                               console.error(error);   
+                            }).finally(() => {
+                               this.setState({isLoading:false})
+                            });
+
+  }
 
 
     render()
@@ -73,7 +103,7 @@ hideSpinner() {
                 
               <View>
                <View style={{alignSelf:'flex-end'}}>
-              <Pressable onPress={()=>this.onShare(item.title.rendered,item.link,item.excerpt.rendered)} >
+              <Pressable onPress={()=>this.onShare(this.state.title,this.state.link)} >
               <Icon
               name='share-social-outline'
               type='ionicon' 
@@ -81,13 +111,12 @@ hideSpinner() {
             </Pressable>
               </View>
 
-                <Text h4 style={{marginTop:10,fontSize:16}} onPress={()=>{this.props.navigation.navigate('NewsContent',{
-                  item: item })}}>{item.title.rendered}
+                <Text h4 style={{marginTop:10,fontSize:16}} >{this.state.title}
                   </Text>
- <Text style={{marginLeft:0}}>{moment(item.modified_gmt).fromNow()}</Text>
+ {/* <Text style={{marginLeft:0}}>{moment(item.modified_gmt).fromNow()}</Text> */}
 <View style={{marginTop:10}}>
 <HTMLView
-        value={item.excerpt.rendered}
+        value={this.state.excerpt}
         stylesheet={{marginTop:50}}
       />
 </View>
@@ -96,12 +125,12 @@ hideSpinner() {
             
               <Image 
                 style={styles.FeedImage} 
-                source= {{uri: item.yoast_head_json.twitter_image}}
+                source= {{uri: this.state.new_image}}
               PlaceholderContent={<ActivityIndicator size="small" color="#0000ff" />}
              />
 
 <HTMLView
-        value={item.content.rendered}
+        value={this.state.description}
         stylesheet={styles}
       />
            <View style={{marginBottom:50}}></View> 
@@ -152,7 +181,7 @@ hideSpinner() {
     }
 }
 
-export default NewsContent;
+export default NewsContentSearch;
 
 const styles = StyleSheet.create({
   Container:
@@ -186,7 +215,6 @@ const styles = StyleSheet.create({
 
   },
   card: {
-    marginTop: 10,
     backgroundColor:'#ffffff',
     padding:10
   },

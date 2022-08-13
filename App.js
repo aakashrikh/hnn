@@ -41,6 +41,9 @@ import Comments from './Screens/Comments';
 import VideoLandscape from './Screens/VideoLandscape';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import linking from './src/linking';
+import Search from './Screens/Search';
+import NewsContentSearch
+ from './Screens/NewsContentSearch';
 //Navigators
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -134,6 +137,7 @@ class StackNav extends Component
           <Stack.Screen name="PodcastList" component={PodcastList} />
           <Stack.Screen name="NewsContent" component={NewsContent} />
           <Stack.Screen name="VideoContent" component={VideoContent} />
+          
         </Stack.Navigator>
       )
   }
@@ -149,22 +153,92 @@ class DrawerContent extends Component
       cat_data:false,
       data:[],  
       isLoading: true,
-      
+      points:0,
+      level:0,
+      contact:"",
+      email:""
     };
   }
   componentDidMount ()
   {
-    fetch('https://hnn24x7.com/wp-json/wp/v2/categories')
+   
+    
+    fetch('https://hnn24x7.com/wp-json/wp/v2/categories?page=1')
     .then((response) => response.json())
     .then((json) => {
       this.setState({ data: json });
+
+      fetch('https://hnn24x7.com/wp-json/wp/v2/categories?page=2')
+      .then((response) => response.json())
+      .then((json) => {
+        this.setState({ data: [...this.state.data, ...json]  });
+      })
+      .catch((error) => console.error(error))
+      .finally(() => {
+        this.setState({ isLoading: false });
+      });
+
+      
     })
     .catch((error) => console.error(error))
     .finally(() => {
       this.setState({ isLoading: false });
     });
+
+
+   
+
+    if(global.token != null )
+    {
+      this.get_profile_data();
+    }
+
+
+    
+    if(global.token != null )
+    {
+      this.get_profile_data();
+    }
+    
+
   }
 
+
+  get_profile_data = () =>{
+
+    fetch(global.api_key+"get_user_profile", {
+        method: 'POST',
+        headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization':global.token 
+        }
+        }).then((response) => response.json())
+        .then((json) => {
+            console.warn(json)
+           if(!json.status){
+              // Toast.show(json.msg)
+           }
+            else
+            {
+             
+                this.setState({name:json.data.name})
+                this.setState({points:json.data.points})
+                this.setState({level:json.data.level})
+                this.setState({email:json.data.email})
+                this.setState({contact:json.data.contact})
+                // if(json.data.dob==null){
+                // this.setState({chosenDate:this.state.chosenDate})
+                // }
+                // else{
+                //     this.setState({chosenDate:json.data.dob})
+                // }
+            }
+        })
+        .catch((error) => console.error(error))
+        .finally(() => {
+        });
+}
 
   render()
   {
@@ -227,8 +301,8 @@ class DrawerContent extends Component
               </View>
 
               <View style={{ marginTop: 5,marginBottom:20 }} >
-                        <Text style={{ fontWeight: 'bold', color: 'white', fontSize:18,alignSelf:"center" }}>Aakash Rikh</Text>
-                        <Text style={{ color: 'white', fontSize: 14,alignSelf:"center" }}>+8006435315</Text>
+                        <Text style={{ fontWeight: 'bold', color: 'white', fontSize:18,alignSelf:"center" }}>{this.state.name}</Text>
+                        <Text style={{ color: 'white', fontSize: 14,alignSelf:"center" }}>{this.state.contact}</Text>
                     </View>
 
           </View>
@@ -327,6 +401,7 @@ class App extends Component {
 
       AsyncStorage.setItem('@auth_login', '');
       global.token=null;
+      // this.props.navigation.navigate('SignIn');
     }
 
 
@@ -338,6 +413,7 @@ class App extends Component {
       }
       else {
         return (
+         
           <AuthContext.Provider value={{ login: this.login, logout: this.logout }}>
             <NavigationContainer linking={linking}>
               <Stack.Navigator >
@@ -414,6 +490,9 @@ class App extends Component {
 
                         <Stack.Screen name="Comments" component={Comments} options={{headerShown: false}}/>
 
+                        <Stack.Screen name='Search' component={Search}  options={{headerShown: false}}/>
+
+                        <Stack.Screen name="NewsContentSearch" component={NewsContentSearch} />
 
                         <Stack.Screen name="VideoLandscape" component={VideoLandscape} options={{headerShown: false
                         }}/>

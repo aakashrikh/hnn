@@ -83,7 +83,7 @@ class  EditProfileScreen extends Component {
                 this.setState({isloading:true});
                 var email=this.state.email;
                 var name=this.state.name;
-                var about=this.state.about;;
+                var about=this.state.about;
                 fetch(global.api_key+"update_profile", { 
                     method: 'POST',
                     headers: {    

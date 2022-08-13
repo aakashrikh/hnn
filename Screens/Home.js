@@ -14,6 +14,7 @@ const win = Dimensions.get('window');
 const ratio = win.width/541; //541 is actual image width
 import HTMLView from 'react-native-htmlview';
 import LikeDislike  from '../Components/LikeDislike.js';
+
 import moment from'moment';
 class Home extends Component
 {
@@ -51,7 +52,7 @@ class Home extends Component
 
   renderRightComponent(){
     return(
-      <TouchableOpacity>
+      <TouchableOpacity onPress={()=>this.props.navigation.navigate("Search")}>
         <Icon name="search" color="#fff" size={25}/>
       </TouchableOpacity>
     )
@@ -89,6 +90,7 @@ class Home extends Component
       var urr='https://hnn24x7.com/wp-json/wp/v2/posts?categories='+cat+'&&page='+page;
     }
   
+    console.log(urr);
    // console.log('https://hnn24x7.com/wp-json/wp/v2/posts?categories='+this.state.news_category+'&&page='+page);
     fetch(urr, {
       method: 'GET',
@@ -217,12 +219,20 @@ class Home extends Component
   
               </TouchableOpacity>
             
-              <Image onPress={()=>{this.props.navigation.navigate('NewsContent',{
+              {/* <Image onPress={()=>{this.props.navigation.navigate('NewsContent',{
                   item: item })}}
                 style={styles.FeedImage} 
                 source= {{uri: item.yoast_head_json.twitter_image}}
               PlaceholderContent={<ActivityIndicator size="small" color="#0000ff" />}
-             />
+             /> */}
+             <ProgressiveFastImage
+              onPress={()=>{this.props.navigation.navigate('NewsContent',{
+                item: item })}}
+              style={styles.FeedImage} 
+              source= {{uri: item.yoast_head_json.twitter_image}}
+              thumbnailSource={require("../assets/hnn.webp")}
+              PlaceholderContent={<ActivityIndicator size="small" color="#0000ff" />}
+              />
             
             {/* <View style={{flex:1,flexDirection:'row',marginTop:10}}> */}
 
@@ -326,10 +336,21 @@ class Category extends Component
 
   componentDidMount()
   {
-    fetch('https://hnn24x7.com/wp-json/wp/v2/categories')
+    fetch('https://hnn24x7.com/wp-json/wp/v2/categories?page=1')
     .then((response) => response.json())
     .then((json) => {
       this.setState({ data: json });
+
+      fetch('https://hnn24x7.com/wp-json/wp/v2/categories?page=2')
+      .then((response) => response.json())
+      .then((json) => {
+        this.setState({ data: [...this.state.data, ...json]  });
+      })
+      .catch((error) => console.error(error))
+      .finally(() => {
+        this.setState({ isLoading: false });
+      });
+
     })
     .catch((error) => console.error(error))
     .finally(() => {
