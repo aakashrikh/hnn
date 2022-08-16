@@ -187,13 +187,13 @@ class Home extends Component
                 <View style={{ flexDirection:'row',width:'100%' }}>
                   <View style={{ flexDirection:'row',width:35 }}>
                 <Image 
-                  style={{width:30,height:30}} 
-                  source= {require('../assets/logo.png')}
+                  style={{width:80,height:30}} 
+                  source= {require('../img/logo.png')}
                 />
                 </View>
               <View style={{flexDirection:'column',width:'80%'}}>
-              <Text h5 style={{marginLeft:10,fontWeight:'500',color:"#fff"}}> HNN 24*7  </Text>
-              <Text style={{marginLeft:10,color:"#fff"}}>{moment(item.modified_gmt).fromNow()}</Text>
+              <Text h5 style={{marginLeft:70,fontWeight:'500',color:"#fff"}}> HNN 24*7  </Text>
+              <Text style={{marginLeft:70,color:"#fff"}}>{moment(item.modified_gmt).fromNow()}</Text>
               </View>
 
               <View style={{alignSelf:'flex-end'}}>

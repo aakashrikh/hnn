@@ -9,3 +9,5 @@ include ':react-native-orientation', ':app'
 project(':react-native-orientation').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-orientation/android') 
 include ':react-native-rtmpview'
 project(':react-native-rtmpview').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-rtmpview/android')
+include ':react-native-fast-image'
+project(':react-native-fast-image').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fast-image/android')

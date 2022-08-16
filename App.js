@@ -159,6 +159,7 @@ class DrawerContent extends Component
       email:""
     };
   }
+
   componentDidMount ()
   {
    
@@ -377,6 +378,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log(this.state.islogin)
     AsyncStorage.getItem('@auth_login', (err, result) => {
       // console.warn(result)
       if (JSON.parse(result) != null) {
@@ -397,6 +399,7 @@ class App extends Component {
     }
 
     logout = () => {
+      // this.props.navigation.navigate('SignIn');
       this.setState({ islogin: false })
 
       AsyncStorage.setItem('@auth_login', '');
@@ -447,6 +450,7 @@ class App extends Component {
                         <Stack.Screen name="NewsContent" component={NewsContent} />
 
                         <Stack.Screen name="VideoContent" component={VideoContent} />
+
                         <Stack.Screen name="Comments" component={Comments} options={{headerShown: false}}/>
 
                         
@@ -465,7 +469,7 @@ class App extends Component {
                         {/* <Stack.Screen options={{headerShown: false}} name="Home" component={Home} /> */}
 
                         {/* <Stack.Screen name="Drawer" component={DrawerNav} options={{headerShown: false}}/> */}
-
+                     
                         <Stack.Screen name="Home" component={DrawerNav} options={{headerShown: false}}/>
 
                         <Stack.Screen name="Profile" component={Profile} />
